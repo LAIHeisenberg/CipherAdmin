@@ -106,11 +106,11 @@ file:
     path: ~/file/
     avatar: ~/avatar/
   linux:
-    path: /home/cipherAdmin/file/
-    avatar: /home/cipherAdmin/avatar/
+    path: /home/cipheradmin/file/
+    avatar: /home/cipheradmin/avatar/
   windows:
-    path: C:\cipherAdmin\file\
-    avatar: C:\cipherAdmin\avatar\
+    path: C:\cipheradmin\file\
+    avatar: C:\cipheradmin\avatar\
   # 文件大小 /M
   maxSize: 100
   avatarMaxSize: 5
