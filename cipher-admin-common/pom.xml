@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>cipher-admin</artifactId>
+        <groupId>com.longmai</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>cipher-admin-common</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>cipher-admin-common</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <hutool.version>5.7.22</hutool.version>
+    </properties>
+
+    <dependencies>
+        <!--工具包-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+    </dependencies>
+</project>
