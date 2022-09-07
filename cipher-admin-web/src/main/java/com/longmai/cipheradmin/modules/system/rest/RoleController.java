@@ -24,6 +24,7 @@ import com.longmai.cipheradmin.modules.system.service.dto.RoleDto;
 import com.longmai.cipheradmin.modules.system.service.dto.RoleQueryCriteria;
 import com.longmai.cipheradmin.modules.system.service.dto.RoleSmallDto;
 import com.longmai.cipheradmin.utils.SecurityUtils;
+import com.longmai.cipheradmin.utils.enums.RoleTypeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +81,8 @@ public class RoleController {
     @GetMapping
     @PreAuthorize("@el.check('roles:list')")
     public ResponseEntity<Object> queryRole(RoleQueryCriteria criteria, Pageable pageable){
+        //主需要查询所有的操作员下面的角色
+        criteria.setRoleType(RoleTypeEnum.OPERATOR.getCode());
         return new ResponseEntity<>(roleService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
@@ -91,6 +94,8 @@ public class RoleController {
         if (resources.getId() != null) {
             throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
         }
+        //新增角色也是新增操作员下面的角色
+        resources.setRoleType(RoleTypeEnum.OPERATOR.getCode());
         roleService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

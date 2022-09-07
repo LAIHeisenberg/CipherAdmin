@@ -28,6 +28,7 @@ import com.longmai.cipheradmin.modules.system.service.dto.UserQueryCriteria;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.RsaUtils;
 import com.longmai.cipheradmin.utils.SecurityUtils;
+import com.longmai.cipheradmin.utils.StringUtils;
 import com.longmai.cipheradmin.utils.enums.CodeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -77,7 +78,6 @@ public class UserController {
     @PreAuthorize("@el.check('user:list')")
     public ResponseEntity<Object> queryUser(UserQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(userService.queryAll(criteria,pageable),HttpStatus.OK);
-//        return new ResponseEntity<>(PageUtil.toPage(null,0),HttpStatus.OK);
     }
 
     @Log("新增用户")
@@ -86,7 +86,10 @@ public class UserController {
     @PreAuthorize("@el.check('user:add')")
     public ResponseEntity<Object> createUser(@Validated @RequestBody User resources){
         // 默认密码 123456
-        resources.setPassword(passwordEncoder.encode("123456"));
+        if(StringUtils.isBlank(resources.getPassword())){
+            resources.setPassword("123456");
+        }
+        resources.setPassword(passwordEncoder.encode(resources.getPassword()));
         userService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -100,16 +103,16 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Log("修改用户：个人中心")
-    @ApiOperation("修改用户：个人中心")
-    @PutMapping(value = "center")
-    public ResponseEntity<Object> centerUser(@Validated(User.Update.class) @RequestBody User resources){
-        if(!resources.getId().equals(SecurityUtils.getCurrentUserId())){
-            throw new BadRequestException("不能修改他人资料");
-        }
-        userService.updateCenter(resources);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+//    @Log("修改用户：个人中心")
+//    @ApiOperation("修改用户：个人中心")
+//    @PutMapping(value = "center")
+//    public ResponseEntity<Object> centerUser(@Validated(User.Update.class) @RequestBody User resources){
+//        if(!resources.getId().equals(SecurityUtils.getCurrentUserId())){
+//            throw new BadRequestException("不能修改他人资料");
+//        }
+//        userService.updateCenter(resources);
+//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+//    }
 
     @Log("删除用户")
     @ApiOperation("删除用户")
@@ -142,18 +145,18 @@ public class UserController {
         return new ResponseEntity<>(userService.updateAvatar(avatar), HttpStatus.OK);
     }
 
-    @Log("修改邮箱")
-    @ApiOperation("修改邮箱")
-    @PostMapping(value = "/updateEmail/{code}")
-    public ResponseEntity<Object> updateUserEmail(@PathVariable String code,@RequestBody User user) throws Exception {
-        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,user.getPassword());
-        UserDto userDto = userService.findByName(SecurityUtils.getCurrentUsername());
-        if(!passwordEncoder.matches(password, userDto.getPassword())){
-            throw new BadRequestException("密码错误");
-        }
-        verificationCodeService.validated(CodeEnum.EMAIL_RESET_EMAIL_CODE.getKey() + user.getEmail(), code);
-        userService.updateEmail(userDto.getUsername(),user.getEmail());
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @Log("修改邮箱")
+//    @ApiOperation("修改邮箱")
+//    @PostMapping(value = "/updateEmail/{code}")
+//    public ResponseEntity<Object> updateUserEmail(@PathVariable String code,@RequestBody User user) throws Exception {
+//        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,user.getPassword());
+//        UserDto userDto = userService.findByName(SecurityUtils.getCurrentUsername());
+//        if(!passwordEncoder.matches(password, userDto.getPassword())){
+//            throw new BadRequestException("密码错误");
+//        }
+//        verificationCodeService.validated(CodeEnum.EMAIL_RESET_EMAIL_CODE.getKey() + user.getEmail(), code);
+//        userService.updateEmail(userDto.getUsername(),user.getEmail());
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 
 }

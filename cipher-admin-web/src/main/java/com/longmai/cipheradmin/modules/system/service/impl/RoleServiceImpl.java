@@ -69,6 +69,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public List<RoleDto> queryByRoleType(Integer roleType) {
+        return roleMapper.toDto(roleRepository.findByRoleType(roleType));
+    }
+
+    @Override
     public List<RoleDto> queryAll(RoleQueryCriteria criteria) {
         return roleMapper.toDto(roleRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root, criteria, criteriaBuilder)));
     }

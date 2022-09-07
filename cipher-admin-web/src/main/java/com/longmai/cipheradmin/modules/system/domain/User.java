@@ -56,24 +56,28 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "用户名称")
     private String username;
 
-    @NotBlank
-    @ApiModelProperty(value = "用户昵称")
-    private String nickName;
+    @Column(name = "pwd")
+    @ApiModelProperty(value = "密码")
+    private String password;
+
+    @Column(name = "pwd_reset_time")
+    @ApiModelProperty(value = "最后修改密码的时间", hidden = true)
+    private Date pwdResetTime;
+
+    @ApiModelProperty(value = "用户性别")
+    private String gender;
 
     @ApiModelProperty(value = "真实姓名")
     private String realName;
-
-    @Email
-    @NotBlank
-    @ApiModelProperty(value = "邮箱")
-    private String email;
 
     @NotBlank
     @ApiModelProperty(value = "电话号码")
     private String tel;
 
-    @ApiModelProperty(value = "用户性别")
-    private String gender;
+    @Email
+    @NotBlank
+    @ApiModelProperty(value = "邮箱")
+    private String email;
 
     @ApiModelProperty(value = "头像真实名称",hidden = true)
     private String avatarName;
@@ -81,10 +85,20 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "头像存储的路径", hidden = true)
     private String avatarPath;
 
-    @Column(name = "pwd")
-    @ApiModelProperty(value = "密码")
-    private String password;
+    @NotNull
+    @ApiModelProperty(value = "帐号启用状态：0->启用；1->临时停用；2->永久停用")
+    private Integer state;
 
+    @ApiModelProperty(value = "备注")
+    private String remarks;
+
+
+    @ApiModelProperty(value = "认证方式（1：usb key，2：用户名密码，3：两种方式都可以）")
+    private Integer authMethod;
+
+    @ApiModelProperty(value = "首次登陆是否需要修改密码（0：需要，1：不需要）")
+    @Column(name = "if_need_modify_pwd")
+    private Boolean ifNeedModifyPwd;
 
     @ApiModelProperty(value = "人员证书（usb key 认证使用）")
     private String cert;
@@ -92,30 +106,17 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "人员DN（usb key认证使用）")
     private String dn;
 
-    @NotNull
-    @ApiModelProperty(value = "帐号启用状态：0->启用；1->临时停用；2->永久停用")
-    private Integer state;
+    @ApiModelProperty(value = "是否为admin账号", hidden = true)
+    private Boolean enabled = true;
 
     @ApiModelProperty(value = "是否为admin账号", hidden = true)
     private Boolean isAdmin = false;
 
-    @ApiModelProperty(value = "是否为admin账号", hidden = true)
+    @NotBlank
+    @ApiModelProperty(value = "用户昵称")
+    private String nickName;
 
-    private Boolean enabled = true;
 
-    @Column(name = "pwd_reset_time")
-    @ApiModelProperty(value = "最后修改密码的时间", hidden = true)
-    private Date pwdResetTime;
-
-    @ApiModelProperty(value = "备注")
-    private String remarks;
-
-    @ApiModelProperty(value = "登陆方式")
-    private Integer authMethod;
-
-    @ApiModelProperty(value = "首次登陆是否需要修改密码（0：需要，1：不需要）")
-    @Column(name = "if_need_modify_pwd")
-    private Integer ifNeedModifyPwd;
 
     @Override
     public boolean equals(Object o) {

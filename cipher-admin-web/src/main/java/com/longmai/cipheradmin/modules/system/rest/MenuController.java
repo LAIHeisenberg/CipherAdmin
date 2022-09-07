@@ -68,11 +68,11 @@ public class MenuController {
         return new ResponseEntity<>(menuService.buildMenus(menuDtos),HttpStatus.OK);
     }
 
-    @ApiOperation("返回全部的菜单")
+    @ApiOperation("返回全部操作员的菜单")
     @GetMapping(value = "/lazy")
     @PreAuthorize("@el.check('menu:list','roles:list')")
     public ResponseEntity<Object> queryAllMenu(@RequestParam Long pid){
-        return new ResponseEntity<>(menuService.getMenus(pid),HttpStatus.OK);
+        return new ResponseEntity<>(menuService.getOperatorMenus(pid),HttpStatus.OK);
     }
 
     @ApiOperation("根据菜单ID返回所有子节点ID，包含自身ID")

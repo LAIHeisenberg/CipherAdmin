@@ -107,6 +107,12 @@ public interface MenuService {
      * @return /
      */
     List<MenuDto> getMenus(Long pid);
+    /**
+     * 懒加载所有操作员下面的菜单数据
+     * @param pid /
+     * @return /
+     */
+    List<MenuDto> getOperatorMenus(Long pid);
 
     /**
      * 根据ID获取同级与上级数据

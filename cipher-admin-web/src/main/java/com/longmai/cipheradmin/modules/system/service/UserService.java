@@ -67,6 +67,8 @@ public interface UserService {
      */
     UserDto findByName(String userName);
 
+    UserDto findByDn(String dn);
+
     /**
      * 根据用户名查询
      * @param userName /
@@ -124,3 +126,4 @@ public interface UserService {
      */
     void updateCenter(User resources);
 }
+

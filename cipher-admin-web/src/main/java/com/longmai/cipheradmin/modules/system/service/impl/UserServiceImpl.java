@@ -88,12 +88,12 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(resources.getUsername()) != null) {
             throw new EntityExistException(User.class, "username", resources.getUsername());
         }
-        if (userRepository.findByEmail(resources.getEmail()) != null) {
-            throw new EntityExistException(User.class, "email", resources.getEmail());
-        }
-        if (userRepository.findByTel(resources.getTel()) != null) {
-            throw new EntityExistException(User.class, "tel", resources.getTel());
-        }
+//        if (userRepository.findByEmail(resources.getEmail()) != null) {
+//            throw new EntityExistException(User.class, "email", resources.getEmail());
+//        }
+//        if (userRepository.findByTel(resources.getTel()) != null) {
+//            throw new EntityExistException(User.class, "tel", resources.getTel());
+//        }
         userRepository.save(resources);
     }
 
@@ -103,17 +103,17 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(resources.getId()).orElseGet(User::new);
         ValidationUtil.isNull(user.getId(), "User", "id", resources.getId());
         User user1 = userRepository.findByUsername(resources.getUsername());
-        User user2 = userRepository.findByEmail(resources.getEmail());
-        User user3 = userRepository.findByTel(resources.getTel());
+//        User user2 = userRepository.findByEmail(resources.getEmail());
+//        User user3 = userRepository.findByTel(resources.getTel());
         if (user1 != null && !user.getId().equals(user1.getId())) {
             throw new EntityExistException(User.class, "username", resources.getUsername());
         }
-        if (user2 != null && !user.getId().equals(user2.getId())) {
-            throw new EntityExistException(User.class, "email", resources.getEmail());
-        }
-        if (user3 != null && !user.getId().equals(user3.getId())) {
-            throw new EntityExistException(User.class, "phone", resources.getTel());
-        }
+//        if (user2 != null && !user.getId().equals(user2.getId())) {
+//            throw new EntityExistException(User.class, "email", resources.getEmail());
+//        }
+//        if (user3 != null && !user.getId().equals(user3.getId())) {
+//            throw new EntityExistException(User.class, "phone", resources.getTel());
+//        }
         // 如果用户的角色改变
         if (!resources.getRole().equals(user.getRole())) {
             redisUtils.del(CacheKey.DATA_USER + resources.getId());
@@ -172,6 +172,17 @@ public class UserServiceImpl implements UserService {
             return userMapper.toDto(user);
         }
     }
+
+    @Override
+    public UserDto findByDn(String dn){
+        User user = userRepository.findByDnAndEnabled(dn, true);
+        if (user == null){
+            throw new EntityNotFoundException(User.class, "dn", dn);
+        } else {
+            return userMapper.toDto(user);
+        }
+    }
+
 
     @Override
     public UserLoginDto getLoginData(String userName) {

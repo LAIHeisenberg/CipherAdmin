@@ -30,9 +30,11 @@ import com.longmai.cipheradmin.modules.system.service.MenuService;
 import com.longmai.cipheradmin.modules.system.service.RoleService;
 import com.longmai.cipheradmin.modules.system.service.dto.MenuDto;
 import com.longmai.cipheradmin.modules.system.service.dto.MenuQueryCriteria;
+import com.longmai.cipheradmin.modules.system.service.dto.RoleDto;
 import com.longmai.cipheradmin.modules.system.service.dto.RoleSmallDto;
 import com.longmai.cipheradmin.modules.system.service.mapstruct.MenuMapper;
 import com.longmai.cipheradmin.utils.*;
+import com.longmai.cipheradmin.utils.enums.RoleTypeEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -100,6 +102,7 @@ public class MenuServiceImpl implements MenuService {
     public List<MenuDto> findByUser(Long currentUserId) {
         List<RoleSmallDto> roles = roleService.findByUsersId(currentUserId);
         Set<Long> roleIds = roles.stream().map(RoleSmallDto::getId).collect(Collectors.toSet());
+        //获取所有的角色下面的菜单
         LinkedHashSet<Menu> menus = menuRepository.findByRoleIdsAndTypeNot(roleIds, 2);
         return menus.stream().map(menuMapper::toDto).collect(Collectors.toList());
     }
@@ -213,11 +216,27 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public List<MenuDto> getMenus(Long pid) {
         List<Menu> menus;
-        if(pid != null && !pid.equals(0L)){
-            menus = menuRepository.findByPidOrderByMenuSort(pid);
-        } else {
-            menus = menuRepository.findByPidIsNullOrderByMenuSort();
+        if(pid == null){
+            pid = 0L;
         }
+        menus = menuRepository.findByPidOrderByMenuSort(pid);
+        return menuMapper.toDto(menus);
+    }
+
+
+    @Override
+    public List<MenuDto> getOperatorMenus(Long pid) {
+        List<Menu> menus;
+        if(pid == null){
+            pid = 0L;
+        }
+        List<RoleDto> roleDtos = roleService.queryByRoleType(RoleTypeEnum.OPERATOR.getCode());
+        if(CollectionUtil.isEmpty(roleDtos)){
+            return null;
+        }
+        Set<Long> roles = roleDtos.stream().map(RoleDto::getId).collect(Collectors.toSet());
+        LinkedHashSet<Menu>  menusSet = menuRepository.findByRoleIdsAndPid(roles,pid);
+        menus = menusSet.stream().collect(Collectors.toList());
         return menuMapper.toDto(menus);
     }
 

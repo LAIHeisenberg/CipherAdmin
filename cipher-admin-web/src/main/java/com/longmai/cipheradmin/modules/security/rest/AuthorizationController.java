@@ -16,6 +16,7 @@
 package com.longmai.cipheradmin.modules.security.rest;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.longmai.cipheradmin.annotation.Log;
 import com.longmai.cipheradmin.annotation.rest.AnonymousDeleteMapping;
 import com.longmai.cipheradmin.annotation.rest.AnonymousGetMapping;
@@ -29,21 +30,24 @@ import com.longmai.cipheradmin.modules.security.security.TokenProvider;
 import com.longmai.cipheradmin.modules.security.service.OnlineUserService;
 import com.longmai.cipheradmin.modules.security.service.dto.AuthUserDto;
 import com.longmai.cipheradmin.modules.security.service.dto.JwtUserDto;
-import com.longmai.cipheradmin.utils.RedisUtils;
-import com.longmai.cipheradmin.utils.RsaUtils;
-import com.longmai.cipheradmin.utils.SecurityUtils;
-import com.longmai.cipheradmin.utils.StringUtils;
+import com.longmai.cipheradmin.modules.system.service.UserService;
+import com.longmai.cipheradmin.modules.system.service.dto.UserDto;
+import com.longmai.cipheradmin.modules.system.service.dto.UserLoginDto;
+import com.longmai.cipheradmin.utils.*;
 import com.wf.captcha.base.Captcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.security.PublicKey;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -74,39 +80,68 @@ public class AuthorizationController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     @Resource
     private LoginProperties loginProperties;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Log("用户登录")
     @ApiOperation("登录授权")
     @AnonymousPostMapping(value = "/login")
     public ResponseEntity<Object> login(@Validated @RequestBody AuthUserDto authUser, HttpServletRequest request) throws Exception {
-        // 密码解密
-        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
-        // 查询验证码
-        String code = (String) redisUtils.get(authUser.getUuid());
-        // 清除验证码
-        redisUtils.del(authUser.getUuid());
-        if (StringUtils.isBlank(code)) {
-            throw new BadRequestException("验证码不存在或已过期");
+        String password = null;
+        String username = authUser.getUsername();
+        Authentication authentication;
+        if (authUser.getAuthMethod() == 1){
+            UserDto userDto = userService.findByDn(authUser.getDn());
+            if (userDto == null){
+                throw new BadRequestException("设备号无效");
+            }
+            PublicKey publicKey = CertUtils.getPublicKey(userDto.getCert());
+            if(publicKey == null){
+                throw new BadRequestException("证书不存在");
+            }
+            if(!RsaUtils.verify(authUser.getPreSignCode(), authUser.getSign(), publicKey, "SHA1withRSA")){
+                throw new BadRequestException("验签失败");
+            }
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userDto.getUsername());
+            authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        }else {
+            // 密码解密
+            password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, authUser.getPassword());
+            // 查询验证码
+            String code = (String) redisUtils.get(authUser.getUuid());
+            // 清除验证码
+            redisUtils.del(authUser.getUuid());
+            if (StringUtils.isBlank(code)) {
+                throw new BadRequestException("验证码不存在或已过期");
+            }
+            if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {
+                throw new BadRequestException("验证码错误");
+            }
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         }
-        if (StringUtils.isBlank(authUser.getCode()) || !authUser.getCode().equalsIgnoreCase(code)) {
-            throw new BadRequestException("验证码错误");
-        }
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(authUser.getUsername(), password);
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        // 生成令牌与第三方系统获取令牌方式
-        // UserDetails userDetails = userDetailsService.loadUserByUsername(userInfo.getUsername());
-        // Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
         // 保存在线信息
         onlineUserService.save(jwtUserDto, token, request);
+        //判断是否首次登陆需要修改密码？
+        UserLoginDto loginDto = jwtUserDto.getUser();
+        Date pwdResetTime = loginDto.getPwdResetTime();
+        Boolean ifNeedModifyPwd = loginDto.getIfNeedModifyPwd();
+
         // 返回 token 与 用户信息
-        Map<String, Object> authInfo = new HashMap<String, Object>(2) {{
+        Map<String, Object> authInfo = new HashMap<String, Object>(3) {{
             put("token", properties.getTokenStartWith() + token);
             put("user", jwtUserDto);
+            if(pwdResetTime==null && (ifNeedModifyPwd==null || ifNeedModifyPwd)){
+                put("ifNeedModifyPwd", true);
+            }else{
+                put("ifNeedModifyPwd", false);
+            }
         }};
         if (loginProperties.isSingleLogin()) {
             //踢掉之前已经登录的token
@@ -148,4 +183,14 @@ public class AuthorizationController {
         onlineUserService.logout(tokenProvider.getToken(request));
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @AnonymousGetMapping(value = "/preSign-code")
+    public ResponseEntity<Object> getPreSignCode(){
+        String code = RandomUtil.randomString(16);
+        Map<String, String> resMap = new HashMap<String, String>(2) {{
+            put("code", code);
+        }};
+        return ResponseEntity.ok(resMap);
+    }
+
 }

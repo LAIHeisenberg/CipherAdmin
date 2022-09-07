@@ -40,6 +40,8 @@ public interface RoleService {
      */
     List<RoleDto> queryAll();
 
+    List<RoleDto> queryByRoleType(Integer roleType);
+
     /**
      * 根据ID查询
      * @param id /
@@ -128,4 +130,5 @@ public interface RoleService {
      * @return /
      */
     List<Role> findInMenuId(List<Long> menuIds);
+
 }

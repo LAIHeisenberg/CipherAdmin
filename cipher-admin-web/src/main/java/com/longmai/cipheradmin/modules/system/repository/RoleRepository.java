@@ -37,6 +37,8 @@ public interface RoleRepository extends JpaRepository<Role, Long>, JpaSpecificat
      */
     Role findByName(String name);
 
+    List<Role> findByRoleType(Integer roleType);
+
     /**
      * 删除多个角色
      * @param ids /

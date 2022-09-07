@@ -105,4 +105,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      */
     @Query(value = "SELECT count(u.id) FROM sys_user u where u.role_id in ?1", nativeQuery = true)
     int countByRoles(Set<Long> ids);
+
+    User findByDnAndEnabled(String dn, boolean enabled);
 }

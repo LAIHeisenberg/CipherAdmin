@@ -13,27 +13,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.longmai.cipheradmin.modules.system.service.dto;
+package com.longmai.cipheradmin.utils.enums;
 
-import com.longmai.cipheradmin.annotation.Query;
-import lombok.Data;
-
-import java.sql.Timestamp;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
+ * <p>
+ * 角色类型
+ * </p>
  * @author Zheng Jie
- * 公共查询类
+ * @date 2020-05-02
  */
-@Data
-public class RoleQueryCriteria {
+@Getter
+@AllArgsConstructor
+public enum RoleTypeEnum {
 
-    @Query(blurry = "name,description")
-    private String blurry;
+    ADMIN(1, "超级管理员"),
 
-    @Query(type = Query.Type.BETWEEN)
-    private List<Timestamp> createTime;
+    AUDIT(2, "审计员"),
 
-    @Query(type = Query.Type.EQUAL)
-    private Integer roleType;
+    OPERATOR(3, "操作员")
+    ;
+
+    private final Integer code;
+    private final String description;
+
+    public static RoleTypeEnum find(Integer code) {
+        for (RoleTypeEnum value : RoleTypeEnum.values()) {
+            if (value.getCode().equals(code)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }

@@ -53,6 +53,15 @@ public interface MenuRepository extends JpaRepository<Menu, Long>, JpaSpecificat
     List<Menu> findByPidOrderByMenuSort(long pid);
 
     /**
+     * 根据菜单的 PID 查询所有操作员下的菜单
+     * @param pid
+     * @return
+     */
+    @Query(value = "SELECT m.* FROM sys_permission m, sys_role_permission r WHERE " +
+            "m.id = r.permission_id AND r.role_id IN ?1 and m.pid = ?2 order by m.menu_sort asc",nativeQuery = true)
+    LinkedHashSet<Menu> findByRoleIdsAndPid(Set<Long> roleIds,long pid);
+
+    /**
      * 查询顶级菜单
      * @return /
      */

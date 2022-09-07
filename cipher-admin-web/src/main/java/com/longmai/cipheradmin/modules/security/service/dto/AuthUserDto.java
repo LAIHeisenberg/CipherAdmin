@@ -37,4 +37,12 @@ public class AuthUserDto {
     private String code;
 
     private String uuid = "";
+
+    private Integer authMethod=2;
+
+    private String dn;
+
+    private String preSignCode;
+
+    private String sign;
 }
