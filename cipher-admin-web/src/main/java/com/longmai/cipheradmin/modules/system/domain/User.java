@@ -85,8 +85,6 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "密码")
     private String password;
 
-    @ApiModelProperty(value = "地址")
-    private String address;
 
     @ApiModelProperty(value = "人员证书（usb key 认证使用）")
     private String cert;
@@ -95,11 +93,15 @@ public class User extends BaseEntity implements Serializable {
     private String dn;
 
     @NotNull
-    @ApiModelProperty(value = "是否启用")
-    private Boolean enabled;
+    @ApiModelProperty(value = "帐号启用状态：0->启用；1->临时停用；2->永久停用")
+    private Integer state;
 
     @ApiModelProperty(value = "是否为admin账号", hidden = true)
     private Boolean isAdmin = false;
+
+    @ApiModelProperty(value = "是否为admin账号", hidden = true)
+
+    private Boolean enabled = true;
 
     @Column(name = "pwd_reset_time")
     @ApiModelProperty(value = "最后修改密码的时间", hidden = true)
@@ -110,6 +112,10 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "登陆方式")
     private Integer authMethod;
+
+    @ApiModelProperty(value = "首次登陆是否需要修改密码（0：需要，1：不需要）")
+    @Column(name = "if_need_modify_pwd")
+    private Integer ifNeedModifyPwd;
 
     @Override
     public boolean equals(Object o) {
