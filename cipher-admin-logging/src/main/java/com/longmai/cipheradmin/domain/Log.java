@@ -75,6 +75,9 @@ public class Log  implements Serializable {
     @CreationTimestamp
     private Timestamp createTime;
 
+    /**日志来源(1:KMS管理系统日志,2:KMIP服务日志)*/
+    private Integer source;
+
     public Log(String logType, Long time) {
         this.logType = logType;
         this.time = time;

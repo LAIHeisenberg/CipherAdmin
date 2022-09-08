@@ -38,6 +38,10 @@ public class LogQueryCriteria {
     @Query
     private String logType;
 
+    //日志来源(1:KMS管理系统日志,2:KMIP服务日志)
+    @Query
+    private Integer source;
+
     @Query(type = Query.Type.BETWEEN)
     private List<Timestamp> createTime;
 }
