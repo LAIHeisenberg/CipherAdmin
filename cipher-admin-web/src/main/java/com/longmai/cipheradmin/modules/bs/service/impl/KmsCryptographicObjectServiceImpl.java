@@ -1,7 +1,7 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
-import com.longmai.cipheradmin.modules.bs.rest.KmsCryptographicObjectRepository;
+import com.longmai.cipheradmin.modules.bs.repository.KmsCryptographicObjectRepository;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.QueryHelp;

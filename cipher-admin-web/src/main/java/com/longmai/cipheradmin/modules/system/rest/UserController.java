@@ -94,6 +94,7 @@ public class UserController {
             resources.setPassword(passwordEncoder.encode(resources.getPassword()));
         }
 
+        resources.setIfLogin(Boolean.FALSE);
         userService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

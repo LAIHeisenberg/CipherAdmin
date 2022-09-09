@@ -23,6 +23,8 @@ import com.longmai.cipheradmin.annotation.rest.AnonymousGetMapping;
 import com.longmai.cipheradmin.annotation.rest.AnonymousPostMapping;
 import com.longmai.cipheradmin.config.RsaProperties;
 import com.longmai.cipheradmin.exception.BadRequestException;
+import com.longmai.cipheradmin.modules.bs.domain.SysRootSecretkey;
+import com.longmai.cipheradmin.modules.bs.service.SysRootSecretkeyService;
 import com.longmai.cipheradmin.modules.security.config.bean.LoginCodeEnum;
 import com.longmai.cipheradmin.modules.security.config.bean.LoginProperties;
 import com.longmai.cipheradmin.modules.security.config.bean.SecurityProperties;
@@ -34,6 +36,7 @@ import com.longmai.cipheradmin.modules.system.service.UserService;
 import com.longmai.cipheradmin.modules.system.service.dto.UserDto;
 import com.longmai.cipheradmin.modules.system.service.dto.UserLoginDto;
 import com.longmai.cipheradmin.utils.*;
+import com.longmai.cipheradmin.utils.enums.AuthMethodEnum;
 import com.wf.captcha.base.Captcha;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -84,6 +87,8 @@ public class AuthorizationController {
     private UserService userService;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private SysRootSecretkeyService rootSecretkeyService;
 
     @Log("用户登录")
     @ApiOperation("登录授权")
@@ -92,7 +97,7 @@ public class AuthorizationController {
         String password = null;
         String username = authUser.getUsername();
         Authentication authentication;
-        if (authUser.getAuthMethod() == 1){
+        if (AuthMethodEnum.USB_KEY.getCode().equals(authUser.getAuthMethod())){
             UserDto userDto = userService.findByDn(authUser.getDn());
             if (userDto == null){
                 throw new BadRequestException("设备号无效");
@@ -126,12 +131,23 @@ public class AuthorizationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = tokenProvider.createToken(authentication);
         final JwtUserDto jwtUserDto = (JwtUserDto) authentication.getPrincipal();
+
+        //系统根密钥的产生：
+        // 在密码卡初始化时产生， 初始化时产生一部分的保护密钥， 超级管理员创建时产生另一部分保护密钥。
+        // 当超级管理员通过 USB Key 身份验证， 登录成功后， 在密码卡内合成保护密钥， 设备掉电即消失。
+        // 系统根密钥的存储： 设备保护密钥的合成因子分成两部分保存， 一部分以明文形式存放于密码卡内， 另一部分存放在 USB Key 中。
+        if (AuthMethodEnum.USB_KEY.getCode().equals(authUser.getAuthMethod())){
+            rootSecretkeyService.generateRootSecrectKey();
+        }
+
+
         // 保存在线信息
         onlineUserService.save(jwtUserDto, token, request);
         //判断是否首次登陆需要修改密码？
         UserLoginDto loginDto = jwtUserDto.getUser();
         Date pwdResetTime = loginDto.getPwdResetTime();
         Boolean ifNeedModifyPwd = loginDto.getIfNeedModifyPwd();
+
 
         // 返回 token 与 用户信息
         Map<String, Object> authInfo = new HashMap<String, Object>(3) {{

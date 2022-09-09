@@ -74,5 +74,7 @@ public class UserDto extends BaseDTO implements Serializable {
 
     private Boolean ifNeedModifyPwd;
 
+    private Boolean ifLogin=false;
+
 
 }

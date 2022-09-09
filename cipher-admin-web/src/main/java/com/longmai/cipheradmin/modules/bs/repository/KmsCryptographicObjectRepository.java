@@ -1,4 +1,4 @@
-package com.longmai.cipheradmin.modules.bs.rest;
+package com.longmai.cipheradmin.modules.bs.repository;
 
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -117,6 +117,9 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "用户昵称")
     private String nickName;
 
+    @ApiModelProperty(value = "是否登录（0：是，1：否）", hidden = true)
+    private Boolean ifLogin=false;
+
 
 
     @Override
