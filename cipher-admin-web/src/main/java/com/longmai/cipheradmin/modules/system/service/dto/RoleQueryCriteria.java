@@ -36,4 +36,7 @@ public class RoleQueryCriteria {
 
     @Query(type = Query.Type.EQUAL)
     private Integer roleType;
+
+    @Query(type = Query.Type.EQUAL)
+    private Boolean ifIn;
 }

@@ -60,6 +60,7 @@ public class LogController {
         criteria.setLogType("ERROR");
         logService.download(logService.queryAll(criteria), response);
     }
+
     @GetMapping
     @ApiOperation("日志查询")
     @PreAuthorize("@el.check()")

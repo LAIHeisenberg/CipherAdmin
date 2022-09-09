@@ -28,6 +28,7 @@ import com.longmai.cipheradmin.modules.system.service.dto.*;
 import com.longmai.cipheradmin.modules.system.service.mapstruct.UserLoginMapper;
 import com.longmai.cipheradmin.modules.system.service.mapstruct.UserMapper;
 import com.longmai.cipheradmin.utils.*;
+import com.longmai.cipheradmin.utils.enums.AuthMethodEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -88,12 +89,6 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByUsername(resources.getUsername()) != null) {
             throw new EntityExistException(User.class, "username", resources.getUsername());
         }
-//        if (userRepository.findByEmail(resources.getEmail()) != null) {
-//            throw new EntityExistException(User.class, "email", resources.getEmail());
-//        }
-//        if (userRepository.findByTel(resources.getTel()) != null) {
-//            throw new EntityExistException(User.class, "tel", resources.getTel());
-//        }
         userRepository.save(resources);
     }
 
@@ -103,17 +98,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(resources.getId()).orElseGet(User::new);
         ValidationUtil.isNull(user.getId(), "User", "id", resources.getId());
         User user1 = userRepository.findByUsername(resources.getUsername());
-//        User user2 = userRepository.findByEmail(resources.getEmail());
-//        User user3 = userRepository.findByTel(resources.getTel());
         if (user1 != null && !user.getId().equals(user1.getId())) {
             throw new EntityExistException(User.class, "username", resources.getUsername());
         }
-//        if (user2 != null && !user.getId().equals(user2.getId())) {
-//            throw new EntityExistException(User.class, "email", resources.getEmail());
-//        }
-//        if (user3 != null && !user.getId().equals(user3.getId())) {
-//            throw new EntityExistException(User.class, "phone", resources.getTel());
-//        }
         // 如果用户的角色改变
         if (!resources.getRole().equals(user.getRole())) {
             redisUtils.del(CacheKey.DATA_USER + resources.getId());
@@ -131,6 +118,18 @@ public class UserServiceImpl implements UserService {
         user.setTel(resources.getTel());
         user.setNickName(resources.getNickName());
         user.setGender(resources.getGender());
+        user.setAuthMethod(resources.getAuthMethod());
+        user.setState(resources.getState());
+        user.setAddress(resources.getAddress());
+        if(StringUtils.isNotBlank(resources.getDn())){
+            user.setDn(resources.getDn());
+        }
+        if(StringUtils.isNotBlank(resources.getCert())){
+            user.setCert(resources.getCert());
+        }
+        if(StringUtils.isNotBlank(resources.getPassword())){
+            user.setCert(resources.getPassword());
+        }
         userRepository.save(user);
         // 清除缓存
         delCaches(user.getId(), user.getUsername());
@@ -140,10 +139,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     public void updateCenter(User resources) {
         User user = userRepository.findById(resources.getId()).orElseGet(User::new);
-        User user1 = userRepository.findByTel(resources.getTel());
-        if (user1 != null && !user.getId().equals(user1.getId())) {
-            throw new EntityExistException(User.class, "phone", resources.getTel());
-        }
+
         user.setNickName(resources.getNickName());
         user.setTel(resources.getTel());
         user.setGender(resources.getGender());

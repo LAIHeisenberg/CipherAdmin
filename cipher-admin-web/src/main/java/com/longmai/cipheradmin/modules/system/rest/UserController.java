@@ -29,6 +29,7 @@ import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.RsaUtils;
 import com.longmai.cipheradmin.utils.SecurityUtils;
 import com.longmai.cipheradmin.utils.StringUtils;
+import com.longmai.cipheradmin.utils.enums.AuthMethodEnum;
 import com.longmai.cipheradmin.utils.enums.CodeEnum;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,72 +77,82 @@ public class UserController {
     @ApiOperation("查询用户")
     @GetMapping
     @PreAuthorize("@el.check('user:list')")
-    public ResponseEntity<Object> queryUser(UserQueryCriteria criteria, Pageable pageable){
-        return new ResponseEntity<>(userService.queryAll(criteria,pageable),HttpStatus.OK);
+    public ResponseEntity<Object> queryUser(UserQueryCriteria criteria, Pageable pageable) {
+        return new ResponseEntity<>(userService.queryAll(criteria, pageable), HttpStatus.OK);
     }
 
     @Log("新增用户")
     @ApiOperation("新增用户")
     @PostMapping
     @PreAuthorize("@el.check('user:add')")
-    public ResponseEntity<Object> createUser(@Validated @RequestBody User resources){
+    public ResponseEntity<Object> createUser(@Validated @RequestBody User resources) {
         // 默认密码 123456
-        if(StringUtils.isBlank(resources.getPassword())){
-            resources.setPassword("123456");
+        if (AuthMethodEnum.USER_PWD.getCode().equals(resources.getAuthMethod())) {
+            if(StringUtils.isBlank(resources.getPassword())){
+                resources.setPassword("123456");
+            }
+            resources.setPassword(passwordEncoder.encode(resources.getPassword()));
         }
-        resources.setPassword(passwordEncoder.encode(resources.getPassword()));
+
         userService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @Log("修改用户")
+    @Log("管理员修改用户")
     @ApiOperation("修改用户")
     @PutMapping
     @PreAuthorize("@el.check('user:edit')")
     public ResponseEntity<Object> updateUser(@Validated(User.Update.class) @RequestBody User resources) throws Exception {
+        if (AuthMethodEnum.USER_PWD.getCode().equals(resources.getAuthMethod())) {
+            if(StringUtils.isBlank(resources.getPassword())){
+                resources.setPassword("123456");
+            }
+            resources.setPassword(passwordEncoder.encode(resources.getPassword()));
+        }
         userService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-//    @Log("修改用户：个人中心")
-//    @ApiOperation("修改用户：个人中心")
-//    @PutMapping(value = "center")
-//    public ResponseEntity<Object> centerUser(@Validated(User.Update.class) @RequestBody User resources){
-//        if(!resources.getId().equals(SecurityUtils.getCurrentUserId())){
-//            throw new BadRequestException("不能修改他人资料");
-//        }
-//        userService.updateCenter(resources);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @Log("修改用户：个人中心")
+    @ApiOperation("修改用户：个人中心")
+    @PutMapping(value = "center")
+    public ResponseEntity<Object> centerUser(@Validated(User.Update.class) @RequestBody User resources) {
+        if (!resources.getId().equals(SecurityUtils.getCurrentUserId())) {
+            throw new BadRequestException("不能修改他人资料");
+        }
+        userService.updateCenter(resources);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
     @Log("删除用户")
     @ApiOperation("删除用户")
     @DeleteMapping
     @PreAuthorize("@el.check('user:del')")
-    public ResponseEntity<Object> deleteUser(@RequestBody Set<Long> ids){
+    public ResponseEntity<Object> deleteUser(@RequestBody Set<Long> ids) {
         userService.delete(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation("修改密码")
+    @ApiOperation("个人修改密码")
     @PostMapping(value = "/updatePass")
     public ResponseEntity<Object> updateUserPass(@RequestBody UserPassVo passVo) throws Exception {
-        String oldPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,passVo.getOldPass());
-        String newPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,passVo.getNewPass());
+        String oldPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, passVo.getOldPass());
+        String newPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey, passVo.getNewPass());
         UserDto user = userService.findByName(SecurityUtils.getCurrentUsername());
-        if(!passwordEncoder.matches(oldPass, user.getPassword())){
+        if (!passwordEncoder.matches(oldPass, user.getPassword())) {
             throw new BadRequestException("修改失败，旧密码错误");
         }
-        if(passwordEncoder.matches(newPass, user.getPassword())){
+        if (passwordEncoder.matches(newPass, user.getPassword())) {
             throw new BadRequestException("新密码不能与旧密码相同");
         }
-        userService.updatePass(user.getUsername(),passwordEncoder.encode(newPass));
+        userService.updatePass(user.getUsername(), passwordEncoder.encode(newPass));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ApiOperation("修改头像")
     @PostMapping(value = "/updateAvatar")
-    public ResponseEntity<Object> updateUserAvatar(@RequestParam MultipartFile avatar){
+    public ResponseEntity<Object> updateUserAvatar(@RequestParam MultipartFile avatar) {
         return new ResponseEntity<>(userService.updateAvatar(avatar), HttpStatus.OK);
     }
 

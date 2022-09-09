@@ -75,9 +75,11 @@ public class User extends BaseEntity implements Serializable {
     private String tel;
 
     @Email
-    @NotBlank
     @ApiModelProperty(value = "邮箱")
     private String email;
+
+    @ApiModelProperty(value = "")
+    private String address;
 
     @ApiModelProperty(value = "头像真实名称",hidden = true)
     private String avatarName;
@@ -92,9 +94,8 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remarks;
 
-
     @ApiModelProperty(value = "认证方式（1：usb key，2：用户名密码，3：两种方式都可以）")
-    private Integer authMethod;
+    private String authMethod;
 
     @ApiModelProperty(value = "首次登陆是否需要修改密码（0：需要，1：不需要）")
     @Column(name = "if_need_modify_pwd")

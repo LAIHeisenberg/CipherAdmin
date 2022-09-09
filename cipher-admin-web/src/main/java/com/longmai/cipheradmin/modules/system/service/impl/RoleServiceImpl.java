@@ -39,6 +39,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +125,9 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public void updateMenu(Role resources, RoleDto roleDTO) {
         Role role = roleMapper.toEntity(roleDTO);
+        if(Objects.isNull(role)){
+            throw new BadRequestException("所选角色不存在");
+        }
         List<User> users = userRepository.findByRoleId(role.getId());
         // 更新菜单
         role.setMenus(resources.getMenus());

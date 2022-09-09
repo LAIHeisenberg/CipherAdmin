@@ -14,6 +14,8 @@ spring:
         enabled: false
   pid:
     file: /home/cipheradmin/app.pid
+  application:
+    name: cipher-admin-web
 
   #配置 Jpa
   jpa:

@@ -72,6 +72,10 @@ public class Role extends BaseEntity implements Serializable {
     @Column(name = "role_type")
     private Integer roleType;
 
+    @ApiModelProperty(value = "是否内置角色(1:是,0:否)")
+    @Column(name = "if_in")
+    private Boolean ifIn;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

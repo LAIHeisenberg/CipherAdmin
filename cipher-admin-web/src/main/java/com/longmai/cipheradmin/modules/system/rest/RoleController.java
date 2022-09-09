@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,7 @@ public class RoleController {
     public ResponseEntity<Object> queryRole(RoleQueryCriteria criteria, Pageable pageable){
         //主需要查询所有的操作员下面的角色
         criteria.setRoleType(RoleTypeEnum.OPERATOR.getCode());
+        criteria.setIfIn(Boolean.FALSE);
         return new ResponseEntity<>(roleService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
@@ -96,6 +98,7 @@ public class RoleController {
         }
         //新增角色也是新增操作员下面的角色
         resources.setRoleType(RoleTypeEnum.OPERATOR.getCode());
+        resources.setIfIn(Boolean.FALSE);
         roleService.create(resources);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
