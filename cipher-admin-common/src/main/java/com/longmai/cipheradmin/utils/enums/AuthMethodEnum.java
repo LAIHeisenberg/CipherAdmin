@@ -10,10 +10,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AuthMethodEnum {
 
-    USB_KEY(1, "usb key"),
-    USER_PWD(2, "用户名密码");
+    USB_KEY("1", "usb key"),
+    USER_PWD("2", "用户名密码");
 
-    private final Integer code;
+    private final String code;
     private final String description;
 
     public static CodeBiEnum find(Integer code) {
