@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -42,7 +43,8 @@ public class SysWorkSecretkeyController {
     @ApiOperation("查询/workSecretkey")
     @PreAuthorize("@el.check('sysWorkSecretkey:list')")
     public ResponseEntity<Object> querySysWorkSecretkey(SysWorkSecretkeyQueryCriteria criteria, Pageable pageable){
-        return new ResponseEntity<>(sysWorkSecretkeyService.queryAll(criteria,pageable),HttpStatus.OK);
+        Map<String,Object>  map= sysWorkSecretkeyService.queryAll(criteria,pageable);
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
     @PostMapping

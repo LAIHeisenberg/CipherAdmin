@@ -6,10 +6,8 @@ import ch.ntb.inf.kmip.stub.KMIPStub;
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
 import com.longmai.cipheradmin.modules.bs.service.Kmip;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
-import com.longmai.cipheradmin.utils.FileUtil;
-import com.longmai.cipheradmin.utils.PageUtil;
-import com.longmai.cipheradmin.utils.QueryHelp;
-import com.longmai.cipheradmin.utils.ValidationUtil;
+import com.longmai.cipheradmin.utils.*;
+import com.longmai.cipheradmin.utils.enums.CryptographicAlgorithmEnum;
 import lombok.RequiredArgsConstructor;
 import com.longmai.cipheradmin.modules.bs.repository.SysWorkSecretkeyRepository;
 import com.longmai.cipheradmin.modules.bs.service.SysWorkSecretkeyService;
@@ -17,6 +15,7 @@ import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyQueryCriteria;
 import com.longmai.cipheradmin.modules.bs.service.mapstruct.SysWorkSecretkeyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.lang.Snowflake;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 /**
 * @website https://eladmin.vip
@@ -48,7 +48,18 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
     @Override
     public Map<String,Object> queryAll(SysWorkSecretkeyQueryCriteria criteria, Pageable pageable){
         Page<SysWorkSecretkey> page = sysWorkSecretkeyRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
-        return PageUtil.toPage(page.map(sysWorkSecretkeyMapper::toDto));
+        List<SysWorkSecretkeyDto> secretkeyDtos = sysWorkSecretkeyMapper.toDto(page.getContent());
+
+        secretkeyDtos.stream().forEach(secretkey->{
+            String alg = secretkey.getCryptographicAlgorithm();
+            if(StringUtils.isNotBlank(alg)){
+                secretkey.setCryptographicAlgorithmName(CryptographicAlgorithmEnum.find(Integer.valueOf(alg)).name());
+            }
+        });
+
+        Page<SysWorkSecretkeyDto> pages = new PageImpl(secretkeyDtos,pageable,page.getTotalElements());
+
+        return PageUtil.toPage(pages);
     }
 
     @Override

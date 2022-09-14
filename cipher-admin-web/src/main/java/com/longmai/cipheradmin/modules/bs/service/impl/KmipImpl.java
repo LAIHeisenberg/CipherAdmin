@@ -99,7 +99,6 @@ public class KmipImpl implements Kmip {
 
         // Set Template Attribute
         ArrayList<Attribute> templateAttributes = new ArrayList<Attribute>();
-//        EnumCryptographicAlgorithm.AES
         templateAttributes.add(new CryptographicAlgorithm(bsTemplateDto.getCryptAlgorithm()));
         templateAttributes.add(new CryptographicLength(bsTemplateDto.getSeckeyLength()));
         templateAttributes.add(new CryptographicUsageMask(bsTemplateDto.getCryptMask()));
