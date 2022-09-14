@@ -17,6 +17,9 @@ public class SimpleKMIPClient {
     private static final Logger logger = Logger.getLogger(SimpleKMIPClient.class);
 
     public static void main(String[] args) {
+        // configure Logger
+        DOMConfigurator.configureAndWatch("classpath:log4j-1.2.17.xml", 60 * 1000);
+
         KMIPStub stub = new KMIPStub();
         KMIPContainer request = createKMIPRequest();
         KMIPContainer response = stub.processRequest(request);
@@ -34,9 +37,10 @@ public class SimpleKMIPClient {
         batch.setOperation(EnumOperation.Create);
         batch.addAttribute(new ObjectType(EnumObjectType.SymmetricKey));
 
-        // Set Template Attribute
+        // Set TemplateAttribute with Attributes
         ArrayList<Attribute> templateAttributes = new ArrayList<Attribute>();
-        templateAttributes.add(new CryptographicAlgorithm(EnumCryptographicAlgorithm.AES));
+        templateAttributes.add(new
+                CryptographicAlgorithm(EnumCryptographicAlgorithm.AES));
         templateAttributes.add(new CryptographicLength(128));
         templateAttributes.add(new CryptographicUsageMask(0x0C));
         TemplateAttributeStructure tas = new TemplateAttribute();

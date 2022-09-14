@@ -3,36 +3,25 @@ package com.longmai.cipheradmin.modules.bs.service.impl;
 import ch.ntb.inf.kmip.attributes.*;
 import ch.ntb.inf.kmip.container.KMIPBatch;
 import ch.ntb.inf.kmip.container.KMIPContainer;
-import ch.ntb.inf.kmip.kmipenum.EnumCredentialType;
-import ch.ntb.inf.kmip.kmipenum.EnumCryptographicAlgorithm;
-import ch.ntb.inf.kmip.kmipenum.EnumObjectType;
-import ch.ntb.inf.kmip.kmipenum.EnumOperation;
+import ch.ntb.inf.kmip.kmipenum.*;
 import ch.ntb.inf.kmip.objects.Authentication;
 import ch.ntb.inf.kmip.objects.CredentialValue;
 import ch.ntb.inf.kmip.objects.base.Attribute;
 import ch.ntb.inf.kmip.objects.base.Credential;
 import ch.ntb.inf.kmip.objects.base.TemplateAttribute;
 import ch.ntb.inf.kmip.objects.base.TemplateAttributeStructure;
-import ch.ntb.inf.kmip.process.decoder.KMIPDecoderInterface;
-import ch.ntb.inf.kmip.process.encoder.KMIPEncoderInterface;
 import ch.ntb.inf.kmip.stub.KMIPStubInterface;
-import ch.ntb.inf.kmip.stub.transport.KMIPStubTransportLayerInterface;
-import ch.ntb.inf.kmip.test.UCStringCompare;
 import ch.ntb.inf.kmip.types.*;
-import ch.ntb.inf.kmip.utils.KMIPUtils;
+import cn.hutool.core.collection.CollectionUtil;
 import com.longmai.cipheradmin.modules.bs.service.Kmip;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Service
@@ -47,9 +36,23 @@ public class KmipImpl implements Kmip {
      */
     @Override
     public String sendCreatRequest(BsTemplateDto bsTemplateDto) {
+        AtomicReference<String> identifier = new AtomicReference<>("");
         KMIPContainer request = createKMIPRequest(bsTemplateDto);
         KMIPContainer response = stub.processRequest(request);
-        return response.toString();
+        if(response!=null && CollectionUtil.isNotEmpty(response.getBatches())){
+            ArrayList<KMIPBatch> kmipBatches = response.getBatches();
+            KMIPBatch result = kmipBatches.get(0);
+            if(result!=null){
+                ArrayList<Attribute> attributes = result.getAttributes();
+                attributes.forEach(attribute->{
+                    if("Unique Identifier".equals(attribute.getAttributeName())){
+                        KMIPAttributeValue[] ar = attribute.getValues();
+                        identifier.set(ar[0].getValueString());
+                    }
+                });
+            }
+        }
+        return identifier.get();
     }
 
 

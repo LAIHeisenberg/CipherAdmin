@@ -1,6 +1,7 @@
 package com.longmai.cipheradmin.modules.bs.service;
 
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyQueryCriteria;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +45,7 @@ public interface SysWorkSecretkeyService {
     * @param resources /
     * @return SysWorkSecretkeyDto
     */
-    SysWorkSecretkeyDto create(SysWorkSecretkey resources);
+    SysWorkSecretkeyDto create(BsTemplateDto resources);
 
     /**
     * 编辑

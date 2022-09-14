@@ -115,8 +115,8 @@ file:
   maxSize: 100
   avatarMaxSize: 5
 
-kmip
-  targetHostname: http://localhost:8090/app_server_war/KMIPServlet
-  KeyStoreLocation: /home/laiyz/keystore.jks
+kmipServer:
+  targetHostname: http://192.168.1.126:5696/
+  KeyStoreLocation:
   KeyStorePW: password
   testing: 1

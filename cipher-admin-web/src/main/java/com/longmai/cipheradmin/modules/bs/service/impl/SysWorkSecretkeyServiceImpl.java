@@ -1,8 +1,11 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
+import ch.ntb.inf.kmip.attributes.CryptographicAlgorithm;
+import ch.ntb.inf.kmip.kmipenum.EnumCryptographicAlgorithm;
 import ch.ntb.inf.kmip.stub.KMIPStub;
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
 import com.longmai.cipheradmin.modules.bs.service.Kmip;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.QueryHelp;
@@ -63,9 +66,19 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysWorkSecretkeyDto create(SysWorkSecretkey resources) {
-        Snowflake snowflake = IdUtil.createSnowflake(1, 1);
-        resources.setId(snowflake.nextId()); 
+    public SysWorkSecretkeyDto create(BsTemplateDto dto) {
+
+        if(dto==null){
+            dto = new BsTemplateDto();
+            dto.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
+            dto.setCryptographicLength(String.valueOf(128));
+            dto.setCryptographicUsageMask(String.valueOf(0x0C));
+        }
+        String aa = kmip.sendCreatRequest(dto);
+        SysWorkSecretkey resources = new SysWorkSecretkey();
+        resources.setCryptographicLength(128);
+        resources.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
+        resources.setSecretkey(aa);
         return sysWorkSecretkeyMapper.toDto(sysWorkSecretkeyRepository.save(resources));
     }
 

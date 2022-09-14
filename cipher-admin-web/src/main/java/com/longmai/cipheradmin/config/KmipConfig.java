@@ -16,14 +16,17 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration
 public class KmipConfig {
 
-    @Value("kmip.targetHostname")
+    @Value("${kmipServer.targetHostname}")
     private String targetHostname;
-    @Value("kmip.keyStoreLocation")
+
+    @Value("${kmipServer.keyStoreLocation}")
     private String keyStoreLocation;
-    @Value("kmip.keyStorePW")
+
+    @Value("${kmipServer.keyStorePW}")
     private String keyStorePW;
-    @Value("kmip.testing")
-    private Integer testing;
+
+    @Value("${kmipServer.testing}")
+    private String testing;
 
     @Bean
     public KMIPEncoderInterface getEncoder() {
@@ -46,6 +49,6 @@ public class KmipConfig {
 
     @Bean
     public KMIPStubInterface getKMIPStub(){
-        return new KMIPStub(getEncoder(),getDecoder(),getTransportLayer(),testing);
+        return new KMIPStub(getEncoder(),getDecoder(),getTransportLayer(),Integer.valueOf(testing));
     }
 }

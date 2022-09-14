@@ -3,6 +3,7 @@ package com.longmai.cipheradmin.modules.bs.rest;
 import com.longmai.cipheradmin.annotation.Log;
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
 import com.longmai.cipheradmin.modules.bs.service.SysWorkSecretkeyService;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyQueryCriteria;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class SysWorkSecretkeyController {
     @Log("新增/workSecretkey")
     @ApiOperation("新增/workSecretkey")
     @PreAuthorize("@el.check('sysWorkSecretkey:add')")
-    public ResponseEntity<Object> createSysWorkSecretkey(@Validated @RequestBody SysWorkSecretkey resources){
+    public ResponseEntity<Object> createSysWorkSecretkey(@Validated @RequestBody BsTemplateDto resources){
         return new ResponseEntity<>(sysWorkSecretkeyService.create(resources),HttpStatus.CREATED);
     }
 
