@@ -69,11 +69,13 @@
             <version>6.1.4</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.kmip4j.kmip4j</groupId>-->
-<!--            <artifactId>kmip4j</artifactId>-->
-<!--            <version>1.0</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.kmip4j</groupId>
+            <artifactId>kmip4j</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/kmip4j.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <!-- 打包 -->

@@ -49,7 +49,7 @@ public class SysWorkSecretkeyController {
     @Log("新增/workSecretkey")
     @ApiOperation("新增/workSecretkey")
     @PreAuthorize("@el.check('sysWorkSecretkey:add')")
-    public ResponseEntity<Object> createSysWorkSecretkey(@Validated @RequestBody BsTemplateDto resources){
+    public ResponseEntity<Object> createSysWorkSecretkey(BsTemplateDto resources){
         return new ResponseEntity<>(sysWorkSecretkeyService.create(resources),HttpStatus.CREATED);
     }
 

@@ -16,17 +16,17 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 @Configuration
 public class KmipConfig {
 
-    @Value("${kmipServer.targetHostname}")
-    private String targetHostname;
+//    @Value("${kmipServer.targetHostname}")
+    private String targetHostname="http://192.168.1.126:5696/";
 
-    @Value("${kmipServer.keyStoreLocation}")
+//    @Value("${kmipServer.keyStoreLocation}")
     private String keyStoreLocation;
 
-    @Value("${kmipServer.keyStorePW}")
-    private String keyStorePW;
+//    @Value("${kmipServer.keyStorePW}")
+    private String keyStorePW="password";
 
-    @Value("${kmipServer.testing}")
-    private String testing;
+//    @Value("${kmipServer.testing}")
+    private String testing="1";
 
     @Bean
     public KMIPEncoderInterface getEncoder() {

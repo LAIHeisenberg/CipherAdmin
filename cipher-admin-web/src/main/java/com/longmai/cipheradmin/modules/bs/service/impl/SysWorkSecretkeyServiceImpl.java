@@ -68,17 +68,18 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
     @Transactional(rollbackFor = Exception.class)
     public SysWorkSecretkeyDto create(BsTemplateDto dto) {
 
-        if(dto==null){
-            dto = new BsTemplateDto();
-            dto.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
-            dto.setCryptographicLength(String.valueOf(128));
-            dto.setCryptographicUsageMask(String.valueOf(0x0C));
-        }
+        dto = new BsTemplateDto();
+        dto.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
+        dto.setCryptographicLength(String.valueOf(128));
+        dto.setCryptographicUsageMask(String.valueOf(0x0C));
+
         String aa = kmip.sendCreatRequest(dto);
         SysWorkSecretkey resources = new SysWorkSecretkey();
         resources.setCryptographicLength(128);
         resources.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
         resources.setSecretkey(aa);
+        Snowflake snowflake = IdUtil.createSnowflake(1, 1);
+        resources.setId(snowflake.nextId());
         return sysWorkSecretkeyMapper.toDto(sysWorkSecretkeyRepository.save(resources));
     }
 
