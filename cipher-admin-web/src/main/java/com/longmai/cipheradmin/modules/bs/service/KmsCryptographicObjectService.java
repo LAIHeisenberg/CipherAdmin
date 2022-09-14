@@ -1,6 +1,7 @@
 package com.longmai.cipheradmin.modules.bs.service;
 
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectQueryCriteria;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,9 @@ public interface KmsCryptographicObjectService {
     * @return KmsCryptographicObjectDto
     */
     KmsCryptographicObjectDto create(KmsCryptographicObject resources);
+
+
+    String createCryptographic(BsTemplateDto bsTemplateDto);
 
     /**
     * 编辑

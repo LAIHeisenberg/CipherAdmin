@@ -15,6 +15,7 @@ import ch.ntb.inf.kmip.types.*;
 import cn.hutool.core.collection.CollectionUtil;
 import com.longmai.cipheradmin.modules.bs.service.Kmip;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
+import com.longmai.cipheradmin.modules.system.param.SecKeyCreateParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,60 @@ public class KmipImpl implements Kmip {
             }
         }
         return identifier.get();
+    }
+
+    @Override
+    public String sendCreatRequest(SecKeyCreateParam bsTemplateDto) {
+        AtomicReference<String> identifier = new AtomicReference<>("");
+        KMIPContainer request = createKMIPRequest(bsTemplateDto);
+        KMIPContainer response = stub.processRequest(request);
+        if(response!=null && CollectionUtil.isNotEmpty(response.getBatches())){
+            ArrayList<KMIPBatch> kmipBatches = response.getBatches();
+            KMIPBatch result = kmipBatches.get(0);
+            if(result!=null){
+                ArrayList<Attribute> attributes = result.getAttributes();
+                attributes.forEach(attribute->{
+                    if("Unique Identifier".equals(attribute.getAttributeName())){
+                        KMIPAttributeValue[] ar = attribute.getValues();
+                        identifier.set(ar[0].getValueString());
+                    }
+                });
+            }
+        }
+        return identifier.get();
+    }
+
+    private KMIPContainer createKMIPRequest(SecKeyCreateParam bsTemplateDto){
+        if(Objects.isNull(bsTemplateDto)){
+            return null;
+        }
+        KMIPContainer container = new KMIPContainer();
+
+        if(bsTemplateDto.getUserId() != null && bsTemplateDto.getPwd() != null){
+            CredentialValue credentialValue = new CredentialValue(bsTemplateDto.getUserId(), bsTemplateDto.getPwd());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        // Set Operation and Attribute
+        batch.setOperation(EnumOperation.Create);
+        batch.addAttribute(new ObjectType(bsTemplateDto.getObjectType()));
+
+        // Set Template Attribute
+        ArrayList<Attribute> templateAttributes = new ArrayList<Attribute>();
+//        EnumCryptographicAlgorithm.AES
+        templateAttributes.add(new CryptographicAlgorithm(bsTemplateDto.getCryptAlgorithm()));
+        templateAttributes.add(new CryptographicLength(bsTemplateDto.getSeckeyLength()));
+        templateAttributes.add(new CryptographicUsageMask(bsTemplateDto.getCryptMask()));
+        TemplateAttributeStructure tas = new TemplateAttribute();
+        tas.setAttributes(templateAttributes);
+        batch.addTemplateAttributeStructure(tas);
+
+        return container;
     }
 
 

@@ -13,4 +13,7 @@ public class SecKeyCreateParam {
     private Integer objectType;
     private Integer cryptMask;
 
+    private String userId;
+    private String pwd;
+
 }

@@ -46,4 +46,8 @@ public class BsTemplateDto implements Serializable {
     private String pwd;
 
     private String uuidKey;
+
+    private String secKeyName;
+
+    private String objectType;
 }

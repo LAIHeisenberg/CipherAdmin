@@ -2,6 +2,8 @@ package com.longmai.cipheradmin.modules.bs.service.impl;
 
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
 import com.longmai.cipheradmin.modules.bs.repository.KmsCryptographicObjectRepository;
+import com.longmai.cipheradmin.modules.bs.service.Kmip;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.QueryHelp;
@@ -11,6 +13,7 @@ import com.longmai.cipheradmin.modules.bs.service.KmsCryptographicObjectService;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectQueryCriteria;
 import com.longmai.cipheradmin.modules.bs.service.mapstruct.KmsCryptographicObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -34,6 +37,8 @@ public class KmsCryptographicObjectServiceImpl implements KmsCryptographicObject
 
     private final KmsCryptographicObjectRepository kmsCryptographicObjectRepository;
     private final KmsCryptographicObjectMapper kmsCryptographicObjectMapper;
+    @Autowired
+    private Kmip kmip;
 
     @Override
     public Map<String,Object> queryAll(KmsCryptographicObjectQueryCriteria criteria, Pageable pageable){
@@ -58,6 +63,12 @@ public class KmsCryptographicObjectServiceImpl implements KmsCryptographicObject
     @Transactional(rollbackFor = Exception.class)
     public KmsCryptographicObjectDto create(KmsCryptographicObject resources) {
         return kmsCryptographicObjectMapper.toDto(kmsCryptographicObjectRepository.save(resources));
+    }
+
+    @Override
+    public String createCryptographic(BsTemplateDto bsTemplateDto) {
+         String keyId = kmip.sendCreatRequest(bsTemplateDto);
+         return keyId;
     }
 
     @Override

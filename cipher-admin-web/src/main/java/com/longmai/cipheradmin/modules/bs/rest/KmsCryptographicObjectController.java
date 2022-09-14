@@ -3,6 +3,7 @@ package com.longmai.cipheradmin.modules.bs.rest;
 import com.longmai.cipheradmin.annotation.Log;
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
 import com.longmai.cipheradmin.modules.bs.service.KmsCryptographicObjectService;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectQueryCriteria;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
+import oshi.util.platform.mac.SysctlUtil;
+
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
@@ -48,8 +51,8 @@ public class KmsCryptographicObjectController {
     @Log("新增/cryptographicObject")
     @ApiOperation("新增/cryptographicObject")
     @PreAuthorize("@el.check('kmsCryptographicObject:add')")
-    public ResponseEntity<Object> createKmsCryptographicObject(@Validated @RequestBody KmsCryptographicObject resources){
-        return new ResponseEntity<>(kmsCryptographicObjectService.create(resources),HttpStatus.CREATED);
+    public ResponseEntity<Object> createKmsCryptographicObject(@Validated @RequestBody BsTemplateDto bsTemplateDto){
+        return new ResponseEntity<>(kmsCryptographicObjectService.createCryptographic(bsTemplateDto),HttpStatus.CREATED);
     }
 
     @PutMapping
