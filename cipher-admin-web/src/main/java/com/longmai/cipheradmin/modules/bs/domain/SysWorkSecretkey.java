@@ -34,7 +34,7 @@ public class SysWorkSecretkey implements Serializable {
 
     @Column(name = "`cryptographic_length`")
     @ApiModelProperty(value = "cryptographicLength")
-    private Double cryptographicLength;
+    private Integer cryptographicLength;
 
     public void copy(SysWorkSecretkey source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));

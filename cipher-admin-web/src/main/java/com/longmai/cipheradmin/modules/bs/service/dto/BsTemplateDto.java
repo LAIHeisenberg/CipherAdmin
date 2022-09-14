@@ -40,4 +40,10 @@ public class BsTemplateDto implements Serializable {
 
     /** 推荐曲线 */
     private String recommendedCurve;
+
+    private String userId;
+
+    private String pwd;
+
+    private String uuidKey;
 }

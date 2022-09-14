@@ -1,6 +1,8 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
+import ch.ntb.inf.kmip.stub.KMIPStub;
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
+import com.longmai.cipheradmin.modules.bs.service.Kmip;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.QueryHelp;
@@ -11,6 +13,7 @@ import com.longmai.cipheradmin.modules.bs.service.SysWorkSecretkeyService;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.SysWorkSecretkeyQueryCriteria;
 import com.longmai.cipheradmin.modules.bs.service.mapstruct.SysWorkSecretkeyMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.lang.Snowflake;
@@ -36,6 +39,8 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
 
     private final SysWorkSecretkeyRepository sysWorkSecretkeyRepository;
     private final SysWorkSecretkeyMapper sysWorkSecretkeyMapper;
+    @Autowired
+    Kmip kmip;
 
     @Override
     public Map<String,Object> queryAll(SysWorkSecretkeyQueryCriteria criteria, Pageable pageable){

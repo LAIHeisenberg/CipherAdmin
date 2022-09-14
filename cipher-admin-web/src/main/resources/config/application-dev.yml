@@ -114,3 +114,9 @@ file:
   # 文件大小 /M
   maxSize: 100
   avatarMaxSize: 5
+
+kmip
+  targetHostname: http://localhost:8090/app_server_war/KMIPServlet
+  KeyStoreLocation: /home/laiyz/keystore.jks
+  KeyStorePW: password
+  testing: 1

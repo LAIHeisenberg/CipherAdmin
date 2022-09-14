@@ -23,5 +23,5 @@ public class SysWorkSecretkeyDto implements Serializable {
 
     private String cryptographicAlgorithm;
 
-    private Double cryptographicLength;
+    private Integer cryptographicLength;
 }
