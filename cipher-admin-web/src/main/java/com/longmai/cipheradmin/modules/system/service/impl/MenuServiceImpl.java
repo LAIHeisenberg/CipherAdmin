@@ -121,12 +121,6 @@ public class MenuServiceImpl implements MenuService {
         if(resources.getPid().equals(0L)){
             resources.setPid(null);
         }
-        if(resources.getIFrame()){
-            String http = "http://", https = "https://";
-            if (!(resources.getPath().toLowerCase().startsWith(http)||resources.getPath().toLowerCase().startsWith(https))) {
-                throw new BadRequestException("外链必须以http://或者https://开头");
-            }
-        }
         menuRepository.save(resources);
         // 计算子节点数目
         resources.setSubCount(0);
@@ -143,12 +137,6 @@ public class MenuServiceImpl implements MenuService {
         Menu menu = menuRepository.findById(resources.getId()).orElseGet(Menu::new);
         ValidationUtil.isNull(menu.getId(),"Permission","id",resources.getId());
 
-        if(resources.getIFrame()){
-            String http = "http://", https = "https://";
-            if (!(resources.getPath().toLowerCase().startsWith(http)||resources.getPath().toLowerCase().startsWith(https))) {
-                throw new BadRequestException("外链必须以http://或者https://开头");
-            }
-        }
         Menu menu1 = menuRepository.findByTitle(resources.getTitle());
 
         if(menu1 != null && !menu1.getId().equals(menu.getId())){
@@ -173,7 +161,6 @@ public class MenuServiceImpl implements MenuService {
         menu.setComponent(resources.getComponent());
         menu.setPath(resources.getPath());
         menu.setIcon(resources.getIcon());
-        menu.setIFrame(resources.getIFrame());
         menu.setPid(resources.getPid());
         menu.setMenuSort(resources.getMenuSort());
         menu.setCache(resources.getCache());
@@ -285,16 +272,13 @@ public class MenuServiceImpl implements MenuService {
                         // 一级目录需要加斜杠，不然会报警告
                         menuVo.setPath(menuDTO.getPid() == null ? "/" + menuDTO.getPath() :menuDTO.getPath());
                         menuVo.setHidden(menuDTO.getHidden());
-                        // 如果不是外链
-                        if(!menuDTO.getIFrame()){
-                            if(menuDTO.getPid() == null){
-                                menuVo.setComponent(StringUtils.isEmpty(menuDTO.getComponent())?"Layout":menuDTO.getComponent());
-                                // 如果不是一级菜单，并且菜单类型为目录，则代表是多级菜单
-                            }else if(menuDTO.getType() == 0){
-                                menuVo.setComponent(StringUtils.isEmpty(menuDTO.getComponent())?"ParentView":menuDTO.getComponent());
-                            }else if(StringUtils.isNoneBlank(menuDTO.getComponent())){
-                                menuVo.setComponent(menuDTO.getComponent());
-                            }
+                        if(menuDTO.getPid() == null){
+                            menuVo.setComponent(StringUtils.isEmpty(menuDTO.getComponent())?"Layout":menuDTO.getComponent());
+                            // 如果不是一级菜单，并且菜单类型为目录，则代表是多级菜单
+                        }else if(menuDTO.getType() == 0){
+                            menuVo.setComponent(StringUtils.isEmpty(menuDTO.getComponent())?"ParentView":menuDTO.getComponent());
+                        }else if(StringUtils.isNoneBlank(menuDTO.getComponent())){
+                            menuVo.setComponent(menuDTO.getComponent());
                         }
                         menuVo.setMeta(new MenuMetaVo(menuDTO.getTitle(),menuDTO.getIcon(),!menuDTO.getCache()));
                         if(CollectionUtil.isNotEmpty(menuDtoList)){
@@ -305,14 +289,10 @@ public class MenuServiceImpl implements MenuService {
                         } else if(menuDTO.getPid() == null){
                             MenuVo menuVo1 = new MenuVo();
                             menuVo1.setMeta(menuVo.getMeta());
-                            // 非外链
-                            if(!menuDTO.getIFrame()){
-                                menuVo1.setPath("index");
-                                menuVo1.setName(menuVo.getName());
-                                menuVo1.setComponent(menuVo.getComponent());
-                            } else {
-                                menuVo1.setPath(menuDTO.getPath());
-                            }
+                            menuVo1.setPath("index");
+                            menuVo1.setName(menuVo.getName());
+                            menuVo1.setComponent(menuVo.getComponent());
+
                             menuVo.setName(null);
                             menuVo.setMeta(null);
                             menuVo.setComponent("Layout");
@@ -342,7 +322,6 @@ public class MenuServiceImpl implements MenuService {
             map.put("菜单标题", menuDTO.getTitle());
             map.put("菜单类型", menuDTO.getType() == null ? "目录" : menuDTO.getType() == 1 ? "菜单" : "按钮");
             map.put("权限标识", menuDTO.getPermission());
-            map.put("外链菜单", menuDTO.getIFrame() ? "是" : "否");
             map.put("菜单可见", menuDTO.getHidden() ? "否" : "是");
             map.put("是否缓存", menuDTO.getCache() ? "是" : "否");
             map.put("创建日期", menuDTO.getCreateTime());

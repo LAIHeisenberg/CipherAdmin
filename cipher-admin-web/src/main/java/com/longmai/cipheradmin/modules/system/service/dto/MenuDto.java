@@ -51,8 +51,6 @@ public class MenuDto extends BaseDTO implements Serializable {
 
     private Integer subCount;
 
-    private Boolean iFrame;
-
     private Boolean cache;
 
     private Boolean hidden;
