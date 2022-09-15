@@ -51,8 +51,8 @@ public class SysWorkSecretkeyController {
     @Log("新增/workSecretkey")
     @ApiOperation("新增/workSecretkey")
     @PreAuthorize("@el.check('sysWorkSecretkey:add')")
-    public ResponseEntity<Object> createSysWorkSecretkey(BsTemplateDto resources){
-        return new ResponseEntity<>(sysWorkSecretkeyService.create(resources),HttpStatus.CREATED);
+    public ResponseEntity<Object> createSysWorkSecretkey(){
+        return new ResponseEntity<>(sysWorkSecretkeyService.create(),HttpStatus.CREATED);
     }
 
     @PutMapping

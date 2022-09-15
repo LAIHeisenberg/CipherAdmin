@@ -9,8 +9,17 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CryptographicOperationEnum {
+    /**
+     * 对称密钥
+     */
     Create(1,"Create"),
+    /**
+     * 非对称密钥
+     */
     CreateKeyPair(2,"CreateKeyPair"),
+    /**
+     *
+     */
     Register(3,"Register"),
     ReKey(4,"ReKey"),
     DeriveKey(5,"DeriveKey"),

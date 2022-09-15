@@ -2,7 +2,7 @@ package com.longmai.cipheradmin.modules.bs.service.impl;
 
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
 import com.longmai.cipheradmin.modules.bs.repository.KmsCryptographicObjectRepository;
-import com.longmai.cipheradmin.modules.bs.service.Kmip;
+import com.longmai.cipheradmin.modules.bs.service.KmipService;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
@@ -38,7 +38,7 @@ public class KmsCryptographicObjectServiceImpl implements KmsCryptographicObject
     private final KmsCryptographicObjectRepository kmsCryptographicObjectRepository;
     private final KmsCryptographicObjectMapper kmsCryptographicObjectMapper;
     @Autowired
-    private Kmip kmip;
+    private KmipService kmip;
 
     @Override
     public Map<String,Object> queryAll(KmsCryptographicObjectQueryCriteria criteria, Pageable pageable){
@@ -65,11 +65,6 @@ public class KmsCryptographicObjectServiceImpl implements KmsCryptographicObject
         return kmsCryptographicObjectMapper.toDto(kmsCryptographicObjectRepository.save(resources));
     }
 
-    @Override
-    public String createCryptographic(BsTemplateDto bsTemplateDto) {
-         String keyId = kmip.sendCreatRequest(bsTemplateDto);
-         return keyId;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)

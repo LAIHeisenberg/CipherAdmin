@@ -48,7 +48,6 @@ public interface KmsCryptographicObjectService {
     KmsCryptographicObjectDto create(KmsCryptographicObject resources);
 
 
-    String createCryptographic(BsTemplateDto bsTemplateDto);
 
     /**
     * 编辑

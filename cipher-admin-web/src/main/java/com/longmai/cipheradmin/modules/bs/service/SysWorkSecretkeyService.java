@@ -41,11 +41,10 @@ public interface SysWorkSecretkeyService {
     SysWorkSecretkeyDto findById(Long id);
 
     /**
-    * 创建
-    * @param resources /
+    * 创建 工作密钥
     * @return SysWorkSecretkeyDto
     */
-    SysWorkSecretkeyDto create(BsTemplateDto resources);
+    SysWorkSecretkeyDto create();
 
     /**
     * 编辑

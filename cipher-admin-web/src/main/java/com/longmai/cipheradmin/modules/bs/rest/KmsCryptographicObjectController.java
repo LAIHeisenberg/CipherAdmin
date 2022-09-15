@@ -2,6 +2,7 @@ package com.longmai.cipheradmin.modules.bs.rest;
 
 import com.longmai.cipheradmin.annotation.Log;
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
+import com.longmai.cipheradmin.modules.bs.param.SecKeyCreateParam;
 import com.longmai.cipheradmin.modules.bs.service.KmsCryptographicObjectService;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectQueryCriteria;
@@ -51,8 +52,8 @@ public class KmsCryptographicObjectController {
     @Log("新增/cryptographicObject")
     @ApiOperation("新增/cryptographicObject")
     @PreAuthorize("@el.check('kmsCryptographicObject:add')")
-    public ResponseEntity<Object> createKmsCryptographicObject(@Validated @RequestBody BsTemplateDto bsTemplateDto){
-        return new ResponseEntity<>(kmsCryptographicObjectService.createCryptographic(bsTemplateDto),HttpStatus.CREATED);
+    public ResponseEntity<Object> createKmsCryptographicObject(@Validated @RequestBody KmsCryptographicObject resources){
+        return new ResponseEntity<>(kmsCryptographicObjectService.create(resources),HttpStatus.CREATED);
     }
 
     @PutMapping

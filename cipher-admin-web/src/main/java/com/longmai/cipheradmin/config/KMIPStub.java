@@ -1,5 +1,6 @@
 package com.longmai.cipheradmin.config;
 
+import ch.ntb.inf.kmip.config.ContextProperties;
 import ch.ntb.inf.kmip.container.KMIPContainer;
 import ch.ntb.inf.kmip.process.decoder.KMIPDecoderInterface;
 import ch.ntb.inf.kmip.process.encoder.KMIPEncoderInterface;
@@ -8,8 +9,6 @@ import ch.ntb.inf.kmip.stub.transport.KMIPStubTransportLayerInterface;
 import ch.ntb.inf.kmip.test.UCStringCompare;
 import ch.ntb.inf.kmip.utils.KMIPUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
@@ -20,21 +19,34 @@ public class KMIPStub implements KMIPStubInterface {
     private KMIPDecoderInterface decoder;
     private KMIPStubTransportLayerInterface transportLayer;
 
-    public KMIPStub(KMIPEncoderInterface encoder,KMIPDecoderInterface decoder,KMIPStubTransportLayerInterface transportLayer,int testing) {
-        this.encoder = encoder;
-        this.decoder = decoder;
-        this.transportLayer = transportLayer;
-        UCStringCompare.testingOption = testing;
+    public KMIPStub() {
+        try {
+            String xmlPath = this.getClass().getResource("kmipConfig/").getPath();
+
+            ContextProperties props = new ContextProperties(xmlPath, "StubConfig.xml");
+            this.encoder = (KMIPEncoderInterface) this.getClass(props.getProperty("Encoder"), "ch.ntb.inf.kmip.process.encoder.KMIPEncoder").newInstance();
+            this.decoder = (KMIPDecoderInterface) this.getClass(props.getProperty("Decoder"), "ch.ntb.inf.kmip.process.decoder.KMIPDecoder").newInstance();
+            this.transportLayer = (KMIPStubTransportLayerInterface) this.getClass(props.getProperty("TransportLayer"), "ch.ntb.inf.kmip.stub.transport.KMIPStubTransportLayerHTTP").newInstance();
+            this.transportLayer.setTargetHostname(props.getProperty("TargetHostname"));
+            this.transportLayer.setKeyStoreLocation(props.getProperty("KeyStoreLocation"));
+            this.transportLayer.setKeyStorePW(props.getProperty("KeyStorePW"));
+            UCStringCompare.testingOption = props.getIntProperty("Testing");
+        } catch (Exception var3) {
+            var3.printStackTrace();
+        }
+
     }
 
-    @Override
+    private Class<?> getClass(String path, String defaultPath) throws ClassNotFoundException {
+        return Class.forName(KMIPUtils.getClassPath(path, defaultPath));
+    }
+
     public KMIPContainer processRequest(KMIPContainer c) {
         ArrayList<Byte> ttlv = this.encoder.encodeRequest(c);
         ArrayList<Byte> responseFromServer = this.transportLayer.send(ttlv);
         return this.decodeResponse(responseFromServer);
     }
 
-    @Override
     public KMIPContainer processRequest(KMIPContainer c, String expectedTTLVRequest, String expectedTTLVResponse) {
         ArrayList<Byte> ttlv = this.encoder.encodeRequest(c);
         log.info("Encoded Request from Client: (actual/expected)");

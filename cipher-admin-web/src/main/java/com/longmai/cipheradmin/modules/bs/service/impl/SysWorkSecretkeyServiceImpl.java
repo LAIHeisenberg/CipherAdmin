@@ -1,10 +1,11 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
-import ch.ntb.inf.kmip.attributes.CryptographicAlgorithm;
 import ch.ntb.inf.kmip.kmipenum.EnumCryptographicAlgorithm;
-import ch.ntb.inf.kmip.stub.KMIPStub;
+import ch.ntb.inf.kmip.kmipenum.EnumObjectType;
+import cn.hutool.core.collection.CollectionUtil;
 import com.longmai.cipheradmin.modules.bs.domain.SysWorkSecretkey;
-import com.longmai.cipheradmin.modules.bs.service.Kmip;
+import com.longmai.cipheradmin.modules.bs.param.SecKeyCreateParam;
+import com.longmai.cipheradmin.modules.bs.service.KmipService;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.utils.*;
 import com.longmai.cipheradmin.utils.enums.CryptographicAlgorithmEnum;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
 
 /**
 * @website https://eladmin.vip
@@ -43,7 +43,7 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
     private final SysWorkSecretkeyRepository sysWorkSecretkeyRepository;
     private final SysWorkSecretkeyMapper sysWorkSecretkeyMapper;
     @Autowired
-    Kmip kmip;
+    KmipService kmip;
 
     @Override
     public Map<String,Object> queryAll(SysWorkSecretkeyQueryCriteria criteria, Pageable pageable){
@@ -77,21 +77,26 @@ public class SysWorkSecretkeyServiceImpl implements SysWorkSecretkeyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysWorkSecretkeyDto create(BsTemplateDto dto) {
+    public SysWorkSecretkeyDto create() {
+        SecKeyCreateParam secKeyCreateParam =new SecKeyCreateParam();
+        //创建对称密钥
+        secKeyCreateParam.setObjectType(EnumObjectType.SymmetricKey);
+        secKeyCreateParam.setCryptAlgorithm(EnumCryptographicAlgorithm.AES);
+        secKeyCreateParam.setSeckeyLength(128);
+        secKeyCreateParam.setCryptMask(0x0C);
+        List<String> uuidKeys = kmip.sendCreatRequest(secKeyCreateParam);
 
-        dto = new BsTemplateDto();
-        dto.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
-        dto.setCryptographicLength(String.valueOf(128));
-        dto.setCryptographicUsageMask(String.valueOf(0x0C));
-
-        String aa = kmip.sendCreatRequest(dto);
         SysWorkSecretkey resources = new SysWorkSecretkey();
         resources.setCryptographicLength(128);
         resources.setCryptographicAlgorithm(String.valueOf(EnumCryptographicAlgorithm.AES));
-        resources.setSecretkey(aa);
-        Snowflake snowflake = IdUtil.createSnowflake(1, 1);
-        resources.setId(snowflake.nextId());
-        return sysWorkSecretkeyMapper.toDto(sysWorkSecretkeyRepository.save(resources));
+        if(CollectionUtil.isNotEmpty(uuidKeys)){
+            resources.setSecretkey(uuidKeys.get(0));
+            resources.setUuidKey(uuidKeys.get(0));
+        }
+//        Snowflake snowflake = IdUtil.createSnowflake(1, 1);
+//        resources.setId(snowflake.nextId());
+        SysWorkSecretkey secretkey = sysWorkSecretkeyRepository.save(resources);
+        return sysWorkSecretkeyMapper.toDto(secretkey);
     }
 
     @Override
