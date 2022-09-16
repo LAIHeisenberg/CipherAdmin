@@ -31,7 +31,7 @@ public class BsGroupController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsGroup:list')")
+    @PreAuthorize("@el.check('bsGroup:manage')")
     public void exportBsGroup(HttpServletResponse response, BsGroupQueryCriteria criteria) throws IOException {
         bsGroupService.download(bsGroupService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsGroupController {
     @GetMapping
     @Log("查询bsuserGroup")
     @ApiOperation("查询bsuserGroup")
-    @PreAuthorize("@el.check('bsGroup:list')")
+    @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> queryBsGroup(BsGroupQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsGroupService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsGroupController {
     @PostMapping
     @Log("新增bsuserGroup")
     @ApiOperation("新增bsuserGroup")
-    @PreAuthorize("@el.check('bsGroup:add')")
+    @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> createBsGroup(@Validated @RequestBody BsGroup resources){
         return new ResponseEntity<>(bsGroupService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsGroupController {
     @PutMapping
     @Log("修改bsuserGroup")
     @ApiOperation("修改bsuserGroup")
-    @PreAuthorize("@el.check('bsGroup:edit')")
+    @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> updateBsGroup(@Validated @RequestBody BsGroup resources){
         bsGroupService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsGroupController {
     @DeleteMapping
     @Log("删除bsuserGroup")
     @ApiOperation("删除bsuserGroup")
-    @PreAuthorize("@el.check('bsGroup:del')")
+    @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> deleteBsGroup(@RequestBody Long[] ids) {
         bsGroupService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);

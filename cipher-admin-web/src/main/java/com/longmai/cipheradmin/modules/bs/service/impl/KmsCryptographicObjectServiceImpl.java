@@ -37,8 +37,6 @@ public class KmsCryptographicObjectServiceImpl implements KmsCryptographicObject
 
     private final KmsCryptographicObjectRepository kmsCryptographicObjectRepository;
     private final KmsCryptographicObjectMapper kmsCryptographicObjectMapper;
-    @Autowired
-    private KmipService kmip;
 
     @Override
     public Map<String,Object> queryAll(KmsCryptographicObjectQueryCriteria criteria, Pageable pageable){

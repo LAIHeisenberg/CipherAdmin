@@ -31,7 +31,7 @@ public class KmsUserController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('kmsUser:list')")
+//    @PreAuthorize("@el.check('kmsUser:list')")
     public void exportKmsUser(HttpServletResponse response, KmsUserQueryCriteria criteria) throws IOException {
         kmsUserService.download(kmsUserService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class KmsUserController {
     @GetMapping
     @Log("查询/bsUser")
     @ApiOperation("查询/bsUser")
-    @PreAuthorize("@el.check('kmsUser:list')")
+//    @PreAuthorize("@el.check('kmsUser:list')")
     public ResponseEntity<Object> queryKmsUser(KmsUserQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(kmsUserService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class KmsUserController {
     @PostMapping
     @Log("新增/bsUser")
     @ApiOperation("新增/bsUser")
-    @PreAuthorize("@el.check('kmsUser:add')")
+//    @PreAuthorize("@el.check('kmsUser:add')")
     public ResponseEntity<Object> createKmsUser(@Validated @RequestBody KmsUser resources){
         return new ResponseEntity<>(kmsUserService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class KmsUserController {
     @PutMapping
     @Log("修改/bsUser")
     @ApiOperation("修改/bsUser")
-    @PreAuthorize("@el.check('kmsUser:edit')")
+//    @PreAuthorize("@el.check('kmsUser:edit')")
     public ResponseEntity<Object> updateKmsUser(@Validated @RequestBody KmsUser resources){
         kmsUserService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class KmsUserController {
     @DeleteMapping
     @Log("删除/bsUser")
     @ApiOperation("删除/bsUser")
-    @PreAuthorize("@el.check('kmsUser:del')")
+//    @PreAuthorize("@el.check('kmsUser:del')")
     public ResponseEntity<Object> deleteKmsUser(@RequestBody Long[] ids) {
         kmsUserService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);

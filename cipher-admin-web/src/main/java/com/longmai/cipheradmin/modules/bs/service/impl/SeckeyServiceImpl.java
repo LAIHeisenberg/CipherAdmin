@@ -71,8 +71,9 @@ public class SeckeyServiceImpl implements SeckeyService {
 
     @Override
     public Map<String,Object> queryAll(SecKeyQueryParam queryParam, Pageable pageable) {
-        Page<SecKeyParam> page = kmsCryptographicObjectRepository.findAllPage((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,queryParam,criteriaBuilder),pageable);
-        return PageUtil.toPage(page);
+//        Page<SecKeyParam> page = kmsCryptographicObjectRepository.findAllPage((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,queryParam,criteriaBuilder),pageable);
+//        return PageUtil.toPage(page);
+        return PageUtil.toPage(null);
     }
 
 }

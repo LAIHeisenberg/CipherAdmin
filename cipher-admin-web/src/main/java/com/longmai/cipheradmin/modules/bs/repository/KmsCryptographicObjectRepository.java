@@ -16,5 +16,5 @@ import org.springframework.lang.Nullable;
 **/
 public interface KmsCryptographicObjectRepository extends JpaRepository<KmsCryptographicObject, Long>, JpaSpecificationExecutor<KmsCryptographicObject> {
 
-    Page<SecKeyParam> findAllPage(@Nullable Specification<SecKeyParam> spec, Pageable pageable);
+//    Page<SecKeyParam> findAllPage(@Nullable Specification<SecKeyParam> spec, Pageable pageable);
 }
