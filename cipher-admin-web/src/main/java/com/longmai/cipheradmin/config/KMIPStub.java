@@ -9,7 +9,9 @@ import ch.ntb.inf.kmip.stub.transport.KMIPStubTransportLayerInterface;
 import ch.ntb.inf.kmip.test.UCStringCompare;
 import ch.ntb.inf.kmip.utils.KMIPUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 
 @Slf4j
@@ -21,8 +23,7 @@ public class KMIPStub implements KMIPStubInterface {
 
     public KMIPStub() {
         try {
-            String xmlPath = this.getClass().getResource("kmipConfig/").getPath();
-
+            String xmlPath = this.getClass().getClassLoader().getResource("kmipConfig/").getPath();
             ContextProperties props = new ContextProperties(xmlPath, "StubConfig.xml");
             this.encoder = (KMIPEncoderInterface) this.getClass(props.getProperty("Encoder"), "ch.ntb.inf.kmip.process.encoder.KMIPEncoder").newInstance();
             this.decoder = (KMIPDecoderInterface) this.getClass(props.getProperty("Decoder"), "ch.ntb.inf.kmip.process.decoder.KMIPDecoder").newInstance();
@@ -43,7 +44,9 @@ public class KMIPStub implements KMIPStubInterface {
 
     public KMIPContainer processRequest(KMIPContainer c) {
         ArrayList<Byte> ttlv = this.encoder.encodeRequest(c);
+        log.info("Encoded Request from Client: (actual/expected)");
         ArrayList<Byte> responseFromServer = this.transportLayer.send(ttlv);
+        log.info("Encoded Response from Server: (actual/expected)");
         return this.decodeResponse(responseFromServer);
     }
 

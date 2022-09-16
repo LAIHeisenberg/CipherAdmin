@@ -1,4 +1,4 @@
-package com.longmai.cipheradmin.modules.bs.service.impl;
+package com.longmai.cipheradmin.modules.bs.param;
 
 import lombok.Data;
 

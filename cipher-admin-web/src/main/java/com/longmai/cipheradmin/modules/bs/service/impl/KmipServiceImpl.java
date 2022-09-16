@@ -8,18 +8,15 @@ import ch.ntb.inf.kmip.objects.Authentication;
 import ch.ntb.inf.kmip.objects.CredentialValue;
 import ch.ntb.inf.kmip.objects.base.*;
 import ch.ntb.inf.kmip.stub.KMIPStubInterface;
-import ch.ntb.inf.kmip.types.*;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.longmai.cipheradmin.modules.bs.param.*;
 import com.longmai.cipheradmin.modules.bs.service.KmipService;
-import com.longmai.cipheradmin.modules.bs.service.dto.BsTemplateDto;
 import com.longmai.cipheradmin.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Element;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,18 +38,6 @@ public class KmipServiceImpl implements KmipService {
     @Autowired
     private KMIPStubInterface stub;
 
-    public static final Map<Integer, List<Integer>> OBJECT_TYPE_MAP = new HashMap<>();
-
-    public static final Map<Integer, List<Integer>> OPERATION_MAP = new HashMap<>();
-
-    static {
-        OBJECT_TYPE_MAP.put(EnumObjectType.SymmetricKey, Arrays.asList(EnumCryptographicAlgorithm.AES, EnumCryptographicAlgorithm.DES, EnumCryptographicAlgorithm.DESede));
-        OBJECT_TYPE_MAP.put(EnumObjectType.PublicKey, Arrays.asList(EnumCryptographicAlgorithm.RSA));
-        OBJECT_TYPE_MAP.put(EnumObjectType.PrivateKey, Arrays.asList(EnumCryptographicAlgorithm.RSA));
-
-        OPERATION_MAP.put(EnumOperation.Create, Arrays.asList(EnumCryptographicAlgorithm.AES, EnumCryptographicAlgorithm.DES, EnumCryptographicAlgorithm.DESede));
-        OPERATION_MAP.put(EnumOperation.CreateKeyPair, Arrays.asList(EnumCryptographicAlgorithm.RSA));
-    }
 
 
     /**
@@ -97,15 +82,14 @@ public class KmipServiceImpl implements KmipService {
     @Override
     public List<String> sendCreatRequest(SecKeyCreateParam createParam) {
         Integer objectType = createParam.getObjectType();
-        KMIPContainer container = null;
+        KMIPContainer request = null;
         if (EnumObjectType.SymmetricKey == objectType) {//对称加密
-            container = createParamToKMIPContainer(createParam);
+            request = createParamToKMIPContainer(createParam);
         } else if (EnumObjectType.PrivateKey == objectType || EnumObjectType.PublicKey == objectType) { //非对称密钥
-            container = createKeyPairParamToKMIPContainer(createParam);
+            request = createKeyPairParamToKMIPContainer(createParam);
         } else if (EnumObjectType.Template == objectType) {
-            container = createTemplateParamToKMIPContainer(createParam);
+            request = createTemplateParamToKMIPContainer(createParam);
         }
-        KMIPContainer request = createParamToKMIPContainer(createParam);
         KMIPContainer response = stub.processRequest(request);
         log.info("\n-------\n" + response + "\n-----------");
         if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
@@ -142,25 +126,8 @@ public class KmipServiceImpl implements KmipService {
      */
     @Override
     public List<String> sendDestoryRequest(SecKeyDestroyParam destroyParam) {
-        List<String> uuidKeys = destroyParam.getUuidKeys();
-        KMIPContainer container = new KMIPContainer();
-        if (StringUtils.isNotBlank(destroyParam.getUsername()) && StringUtils.isNotBlank(destroyParam.getPassword())) {
-            CredentialValue credentialValue = new CredentialValue(destroyParam.getUsername(), destroyParam.getPassword());
-            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
-            container.setAuthentication(new Authentication(credential));
-        }
-        KMIPBatch batch = new KMIPBatch();
-        container.addBatch(batch);
-        container.calculateBatchCount();
-
-        batch.setOperation(EnumOperation.Destroy);
-        for (String uuidKey : uuidKeys) {
-            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
-            uniqueIdentifier.setValue(uuidKey,null);
-            batch.addAttribute(uniqueIdentifier);
-        }
-
-        KMIPContainer response = stub.processRequest(container);
+        KMIPContainer request = destroySecKeysRequest(destroyParam);
+        KMIPContainer response = stub.processRequest(request);
         log.info("\n-------\n" + response + "\n-----------");
         if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
             return null;
@@ -187,6 +154,27 @@ public class KmipServiceImpl implements KmipService {
             });
         }
         return res;
+    }
+
+    private KMIPContainer destroySecKeysRequest(SecKeyDestroyParam destroyParam){
+        KMIPContainer container = new KMIPContainer();
+        if (StringUtils.isNotBlank(destroyParam.getUsername()) && StringUtils.isNotBlank(destroyParam.getPassword())) {
+            CredentialValue credentialValue = new CredentialValue(destroyParam.getUsername(), destroyParam.getPassword());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        batch.setOperation(EnumOperation.Destroy);
+        List<String> uuidKeys = destroyParam.getUuidKeys();
+        for (String uuidKey : uuidKeys) {
+            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+            uniqueIdentifier.setValue(uuidKey,null);
+            batch.addAttribute(uniqueIdentifier);
+        }
+        return container;
     }
 
 

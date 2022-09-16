@@ -1,7 +1,7 @@
 package com.longmai.cipheradmin.modules.bs.service;
 
 import com.longmai.cipheradmin.modules.bs.param.SecKeyCreateParam;
-import com.longmai.cipheradmin.modules.bs.service.impl.SecKeyDestroyParam;
+import com.longmai.cipheradmin.modules.bs.param.SecKeyDestroyParam;
 
 import java.util.List;
 
