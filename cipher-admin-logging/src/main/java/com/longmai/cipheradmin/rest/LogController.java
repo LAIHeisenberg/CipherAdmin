@@ -63,7 +63,7 @@ public class LogController {
 
     @GetMapping
     @ApiOperation("日志查询")
-    @PreAuthorize("@el.check()")
+    @PreAuthorize("@el.check('klms:log')")
     public ResponseEntity<Object> queryLog(LogQueryCriteria criteria, Pageable pageable){
         criteria.setLogType("INFO");
         return new ResponseEntity<>(logService.queryAll(criteria,pageable), HttpStatus.OK);
