@@ -31,7 +31,7 @@ public class BsLocalCaController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsLocalCa:list')")
+    @PreAuthorize("@el.check('localCa:manage')")
     public void exportBsLocalCa(HttpServletResponse response, BsLocalCaQueryCriteria criteria) throws IOException {
         bsLocalCaService.download(bsLocalCaService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsLocalCaController {
     @GetMapping
     @Log("查询/localCa")
     @ApiOperation("查询/localCa")
-    @PreAuthorize("@el.check('bsLocalCa:list')")
+    @PreAuthorize("@el.check('localCa:manage')")
     public ResponseEntity<Object> queryBsLocalCa(BsLocalCaQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsLocalCaService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsLocalCaController {
     @PostMapping
     @Log("新增/localCa")
     @ApiOperation("新增/localCa")
-    @PreAuthorize("@el.check('bsLocalCa:add')")
+    @PreAuthorize("@el.check('localCa:manage')")
     public ResponseEntity<Object> createBsLocalCa(@Validated @RequestBody BsLocalCa resources){
         return new ResponseEntity<>(bsLocalCaService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsLocalCaController {
     @PutMapping
     @Log("修改/localCa")
     @ApiOperation("修改/localCa")
-    @PreAuthorize("@el.check('bsLocalCa:edit')")
+    @PreAuthorize("@el.check('localCa:manage')")
     public ResponseEntity<Object> updateBsLocalCa(@Validated @RequestBody BsLocalCa resources){
         bsLocalCaService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsLocalCaController {
     @DeleteMapping
     @Log("删除/localCa")
     @ApiOperation("删除/localCa")
-    @PreAuthorize("@el.check('bsLocalCa:del')")
+    @PreAuthorize("@el.check('localCa:manage')")
     public ResponseEntity<Object> deleteBsLocalCa(@RequestBody Long[] ids) {
         bsLocalCaService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);

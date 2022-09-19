@@ -31,7 +31,7 @@ public class BsKnownCaController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsKnownCa:list')")
+    @PreAuthorize("@el.check('knownCa:manage')")
     public void exportBsKnownCa(HttpServletResponse response, BsKnownCaQueryCriteria criteria) throws IOException {
         bsKnownCaService.download(bsKnownCaService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsKnownCaController {
     @GetMapping
     @Log("查询/knownCa")
     @ApiOperation("查询/knownCa")
-    @PreAuthorize("@el.check('bsKnownCa:list')")
+    @PreAuthorize("@el.check('knownCa:manage')")
     public ResponseEntity<Object> queryBsKnownCa(BsKnownCaQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsKnownCaService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsKnownCaController {
     @PostMapping
     @Log("新增/knownCa")
     @ApiOperation("新增/knownCa")
-    @PreAuthorize("@el.check('bsKnownCa:add')")
+    @PreAuthorize("@el.check('knownCa:manage')")
     public ResponseEntity<Object> createBsKnownCa(@Validated @RequestBody BsKnownCa resources){
         return new ResponseEntity<>(bsKnownCaService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsKnownCaController {
     @PutMapping
     @Log("修改/knownCa")
     @ApiOperation("修改/knownCa")
-    @PreAuthorize("@el.check('bsKnownCa:edit')")
+    @PreAuthorize("@el.check('knownCa:manage')")
     public ResponseEntity<Object> updateBsKnownCa(@Validated @RequestBody BsKnownCa resources){
         bsKnownCaService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsKnownCaController {
     @DeleteMapping
     @Log("删除/knownCa")
     @ApiOperation("删除/knownCa")
-    @PreAuthorize("@el.check('bsKnownCa:del')")
+    @PreAuthorize("@el.check('knownCa:manage')")
     public ResponseEntity<Object> deleteBsKnownCa(@RequestBody Long[] ids) {
         bsKnownCaService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);

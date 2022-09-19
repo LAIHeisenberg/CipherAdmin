@@ -31,7 +31,7 @@ public class BsCertificateController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsCertificate:list')")
+    @PreAuthorize("@el.check('cert:manage')")
     public void exportBsCertificate(HttpServletResponse response, BsCertificateQueryCriteria criteria) throws IOException {
         bsCertificateService.download(bsCertificateService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsCertificateController {
     @GetMapping
     @Log("查询/certificate")
     @ApiOperation("查询/certificate")
-    @PreAuthorize("@el.check('bsCertificate:list')")
+    @PreAuthorize("@el.check('cert:manage')")
     public ResponseEntity<Object> queryBsCertificate(BsCertificateQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsCertificateService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsCertificateController {
     @PostMapping
     @Log("新增/certificate")
     @ApiOperation("新增/certificate")
-    @PreAuthorize("@el.check('bsCertificate:add')")
+    @PreAuthorize("@el.check('cert:manage')")
     public ResponseEntity<Object> createBsCertificate(@Validated @RequestBody BsCertificate resources){
         return new ResponseEntity<>(bsCertificateService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsCertificateController {
     @PutMapping
     @Log("修改/certificate")
     @ApiOperation("修改/certificate")
-    @PreAuthorize("@el.check('bsCertificate:edit')")
+    @PreAuthorize("@el.check('cert:manage')")
     public ResponseEntity<Object> updateBsCertificate(@Validated @RequestBody BsCertificate resources){
         bsCertificateService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsCertificateController {
     @DeleteMapping
     @Log("删除/certificate")
     @ApiOperation("删除/certificate")
-    @PreAuthorize("@el.check('bsCertificate:del')")
+    @PreAuthorize("@el.check('cert:manage')")
     public ResponseEntity<Object> deleteBsCertificate(@RequestBody Long[] ids) {
         bsCertificateService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
