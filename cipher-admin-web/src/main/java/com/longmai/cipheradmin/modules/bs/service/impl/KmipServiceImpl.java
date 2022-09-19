@@ -13,6 +13,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.longmai.cipheradmin.modules.bs.param.*;
 import com.longmai.cipheradmin.modules.bs.service.KmipService;
 import com.longmai.cipheradmin.utils.StringUtils;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,6 +157,209 @@ public class KmipServiceImpl implements KmipService {
         return res;
     }
 
+    @Override
+    public List<String> sendArchiveRequest(SecKeyArchiveParam archiveParam) {
+        KMIPContainer request = archiveSecKeysRequest(archiveParam);
+        KMIPContainer response = stub.processRequest(request);
+        log.info("\n-------\n" + response + "\n-----------");
+        if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
+            return null;
+        }
+        List<KMIPBatch> kmipBatches = response.getBatches();
+        kmipBatches = kmipBatches.stream().filter(kmipBatch -> ObjectUtil.isNotNull(kmipBatch.getResultStatus()) && kmipBatch.getResultStatus().getValue() == EnumResultStatus.Success).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(kmipBatches)) {
+            return null;
+        }
+        List<String> res = new ArrayList<>();
+
+        for (KMIPBatch kmipParam : kmipBatches) {
+            ArrayList<Attribute> attributes = kmipParam.getAttributes();
+            if (CollectionUtil.isEmpty(attributes)) {
+                break;
+            }
+            attributes.forEach(attribute -> {
+                if (attribute instanceof UniqueIdentifier) {
+                    KMIPAttributeValue[] ar = attribute.getValues();
+                    if (ArrayUtils.isNotEmpty(ar)) {
+                        res.add(ar[0].getValueString());
+                    }
+                }
+            });
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> sendActivateRequest(SecKeyActivateParam archiveParam) {
+        KMIPContainer request = activateSecKeysRequest(archiveParam);
+        KMIPContainer response = stub.processRequest(request);
+        log.info("\n-------\n" + response + "\n-----------");
+        if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
+            return null;
+        }
+        List<KMIPBatch> kmipBatches = response.getBatches();
+        kmipBatches = kmipBatches.stream().filter(kmipBatch -> ObjectUtil.isNotNull(kmipBatch.getResultStatus()) && kmipBatch.getResultStatus().getValue() == EnumResultStatus.Success).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(kmipBatches)) {
+            return null;
+        }
+        List<String> res = new ArrayList<>();
+
+        for (KMIPBatch kmipParam : kmipBatches) {
+            ArrayList<Attribute> attributes = kmipParam.getAttributes();
+            if (CollectionUtil.isEmpty(attributes)) {
+                break;
+            }
+            attributes.forEach(attribute -> {
+                if (attribute instanceof UniqueIdentifier) {
+                    KMIPAttributeValue[] ar = attribute.getValues();
+                    if (ArrayUtils.isNotEmpty(ar)) {
+                        res.add(ar[0].getValueString());
+                    }
+                }
+            });
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> sendRevokeRequest(SecKeyRevokeParam revokeParam) {
+        KMIPContainer request = revokeSecKeysRequest(revokeParam);
+        KMIPContainer response = stub.processRequest(request);
+        log.info("\n-------\n" + response + "\n-----------");
+        if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
+            return null;
+        }
+        List<KMIPBatch> kmipBatches = response.getBatches();
+        kmipBatches = kmipBatches.stream().filter(kmipBatch -> ObjectUtil.isNotNull(kmipBatch.getResultStatus()) && kmipBatch.getResultStatus().getValue() == EnumResultStatus.Success).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(kmipBatches)) {
+            return null;
+        }
+        List<String> res = new ArrayList<>();
+
+        for (KMIPBatch kmipParam : kmipBatches) {
+            ArrayList<Attribute> attributes = kmipParam.getAttributes();
+            if (CollectionUtil.isEmpty(attributes)) {
+                break;
+            }
+            attributes.forEach(attribute -> {
+                if (attribute instanceof UniqueIdentifier) {
+                    KMIPAttributeValue[] ar = attribute.getValues();
+                    if (ArrayUtils.isNotEmpty(ar)) {
+                        res.add(ar[0].getValueString());
+                    }
+                }
+            });
+        }
+        return res;
+    }
+
+    @Override
+    public List<String> sendRecoverRequest(SecKeyDestroyParam destroyParam) {
+        KMIPContainer request = recoverSecKeysRequest(destroyParam);
+        KMIPContainer response = stub.processRequest(request);
+        log.info("\n-------\n" + response + "\n-----------");
+        if (Objects.isNull(response) || CollectionUtil.isEmpty(response.getBatches())) {
+            return null;
+        }
+        List<KMIPBatch> kmipBatches = response.getBatches();
+        kmipBatches = kmipBatches.stream().filter(kmipBatch -> ObjectUtil.isNotNull(kmipBatch.getResultStatus()) && kmipBatch.getResultStatus().getValue() == EnumResultStatus.Success).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(kmipBatches)) {
+            return null;
+        }
+        List<String> res = new ArrayList<>();
+
+        for (KMIPBatch kmipParam : kmipBatches) {
+            ArrayList<Attribute> attributes = kmipParam.getAttributes();
+            if (CollectionUtil.isEmpty(attributes)) {
+                break;
+            }
+            attributes.forEach(attribute -> {
+                if (attribute instanceof UniqueIdentifier) {
+                    KMIPAttributeValue[] ar = attribute.getValues();
+                    if (ArrayUtils.isNotEmpty(ar)) {
+                        res.add(ar[0].getValueString());
+                    }
+                }
+            });
+        }
+        return res;
+    }
+
+    private KMIPContainer revokeSecKeysRequest(SecKeyRevokeParam revokeParam){
+        KMIPContainer container = new KMIPContainer();
+        if (StringUtils.isNotBlank(revokeParam.getUsername()) && StringUtils.isNotBlank(revokeParam.getPassword())) {
+            CredentialValue credentialValue = new CredentialValue(revokeParam.getUsername(), revokeParam.getPassword());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        batch.setOperation(EnumOperation.Revoke);
+        List<String> uuidKeys = revokeParam.getUuidKeys();
+        for (String uuidKey : uuidKeys) {
+            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+            uniqueIdentifier.setValue(uuidKey,null);
+            batch.addAttribute(uniqueIdentifier);
+        }
+        String reasonCode = revokeParam.getRevocationReasonCode();
+        RevocationReason revocationReason = new RevocationReason();
+        revocationReason.setValue(reasonCode,null);
+        batch.addAttribute(revocationReason);
+
+        String date = revokeParam.getCompromiseOccurrenceDate();
+        CompromiseDate compromiseDate = new CompromiseDate();
+        compromiseDate.setValue(date,null);
+        batch.addAttribute(compromiseDate);
+
+        return container;
+    }
+
+
+    private KMIPContainer activateSecKeysRequest(SecKeyActivateParam activateParam){
+        KMIPContainer container = new KMIPContainer();
+        if (StringUtils.isNotBlank(activateParam.getUsername()) && StringUtils.isNotBlank(activateParam.getPassword())) {
+            CredentialValue credentialValue = new CredentialValue(activateParam.getUsername(), activateParam.getPassword());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        batch.setOperation(EnumOperation.Activate);
+        List<String> uuidKeys = activateParam.getUuidKeys();
+        for (String uuidKey : uuidKeys) {
+            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+            uniqueIdentifier.setValue(uuidKey,null);
+            batch.addAttribute(uniqueIdentifier);
+        }
+        return container;
+    }
+
+
+    private KMIPContainer archiveSecKeysRequest(SecKeyArchiveParam archiveParam){
+        KMIPContainer container = new KMIPContainer();
+        if (StringUtils.isNotBlank(archiveParam.getUsername()) && StringUtils.isNotBlank(archiveParam.getPassword())) {
+            CredentialValue credentialValue = new CredentialValue(archiveParam.getUsername(), archiveParam.getPassword());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        batch.setOperation(EnumOperation.Archive);
+        List<String> uuidKeys = archiveParam.getUuidKeys();
+        for (String uuidKey : uuidKeys) {
+            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+            uniqueIdentifier.setValue(uuidKey,null);
+            batch.addAttribute(uniqueIdentifier);
+        }
+        return container;
+    }
+
     private KMIPContainer destroySecKeysRequest(SecKeyDestroyParam destroyParam){
         KMIPContainer container = new KMIPContainer();
         if (StringUtils.isNotBlank(destroyParam.getUsername()) && StringUtils.isNotBlank(destroyParam.getPassword())) {
@@ -177,6 +381,27 @@ public class KmipServiceImpl implements KmipService {
         return container;
     }
 
+
+    private KMIPContainer recoverSecKeysRequest(SecKeyDestroyParam destroyParam){
+        KMIPContainer container = new KMIPContainer();
+        if (StringUtils.isNotBlank(destroyParam.getUsername()) && StringUtils.isNotBlank(destroyParam.getPassword())) {
+            CredentialValue credentialValue = new CredentialValue(destroyParam.getUsername(), destroyParam.getPassword());
+            Credential credential = new Credential(new EnumCredentialType(EnumCredentialType.UsernameAndPassword), credentialValue);
+            container.setAuthentication(new Authentication(credential));
+        }
+        KMIPBatch batch = new KMIPBatch();
+        container.addBatch(batch);
+        container.calculateBatchCount();
+
+        batch.setOperation(EnumOperation.Recover);
+        List<String> uuidKeys = destroyParam.getUuidKeys();
+        for (String uuidKey : uuidKeys) {
+            UniqueIdentifier uniqueIdentifier = new UniqueIdentifier();
+            uniqueIdentifier.setValue(uuidKey,null);
+            batch.addAttribute(uniqueIdentifier);
+        }
+        return container;
+    }
 
 
     /**

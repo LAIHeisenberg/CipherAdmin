@@ -4,10 +4,7 @@ import ch.ntb.inf.kmip.kmipenum.EnumCryptographicAlgorithm;
 import ch.ntb.inf.kmip.kmipenum.EnumObjectType;
 import ch.ntb.inf.kmip.kmipenum.EnumOperation;
 import com.longmai.cipheradmin.modules.bs.domain.KmsCryptographicObject;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyCreateParam;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyDestroyParam;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyParam;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyQueryParam;
+import com.longmai.cipheradmin.modules.bs.param.*;
 import com.longmai.cipheradmin.modules.bs.repository.KmsCryptographicObjectRepository;
 import com.longmai.cipheradmin.modules.bs.service.SeckeyService;
 import com.longmai.cipheradmin.modules.bs.service.KmipService;
@@ -68,6 +65,37 @@ public class SeckeyServiceImpl implements SeckeyService {
         List<String> uuidKeys = kmip.sendDestoryRequest(secKeyDestroyParam);
         return uuidKeys;
     }
+
+    @Override
+    public List<String> archiveSecKeys(SecKeyArchiveParam secKeyArchiveParam) {
+        if(Objects.isNull(secKeyArchiveParam)){
+            return null;
+        }
+        List<String> uuidKeys = kmip.sendArchiveRequest(secKeyArchiveParam);
+        return uuidKeys;
+    }
+
+    @Override
+    public List<String> activateSecKeys(SecKeyActivateParam secKeyActivateParam) {
+        if(Objects.isNull(secKeyActivateParam)){
+            return null;
+        }
+        List<String> uuidKeys = kmip.sendActivateRequest(secKeyActivateParam);
+        return uuidKeys;
+    }
+
+    @Override
+    public List<String> revokeSecKeys(SecKeyRevokeParam secKeyRevokeParam) {
+        List<String> uuidKeys = kmip.sendRevokeRequest(secKeyRevokeParam);
+        return uuidKeys;
+    }
+
+    @Override
+    public List<String> recoverSecKeys(SecKeyDestroyParam secKeyDestroyParam) {
+        List<String> uuidKeys = kmip.sendRecoverRequest(secKeyDestroyParam);
+        return uuidKeys;
+    }
+
 
     @Override
     public Map<String,Object> queryAll(SecKeyQueryParam queryParam, Pageable pageable) {

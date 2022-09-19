@@ -1,10 +1,14 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
+import ch.ntb.inf.kmip.kmipenum.EnumCryptographicAlgorithm;
+import cn.hutool.core.collection.CollectionUtil;
 import com.longmai.cipheradmin.modules.bs.domain.BsTemplate;
 import com.longmai.cipheradmin.utils.FileUtil;
 import com.longmai.cipheradmin.utils.PageUtil;
 import com.longmai.cipheradmin.utils.QueryHelp;
 import com.longmai.cipheradmin.utils.ValidationUtil;
+import com.longmai.cipheradmin.utils.enums.CryptographicAlgorithmEnum;
+import com.longmai.cipheradmin.utils.enums.CryptographicUsageMaskEnum;
 import lombok.RequiredArgsConstructor;
 import com.longmai.cipheradmin.modules.bs.repository.BsTemplateRepository;
 import com.longmai.cipheradmin.modules.bs.service.BsTemplateService;
@@ -38,6 +42,13 @@ public class BsTemplateServiceImpl implements BsTemplateService {
     @Override
     public Map<String,Object> queryAll(BsTemplateQueryCriteria criteria, Pageable pageable){
         Page<BsTemplate> page = bsTemplateRepository.findAll((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,criteria,criteriaBuilder),pageable);
+        List<BsTemplate> list = page.getContent();
+        if(CollectionUtil.isNotEmpty(list)){
+            for(BsTemplate template:list){
+                template.setCryptographicAlgorithm(CryptographicAlgorithmEnum.find(Integer.valueOf(template.getCryptographicAlgorithm())).getDescription());
+                template.setCryptographicUsageMask(CryptographicUsageMaskEnum.find(Integer.valueOf(template.getCryptographicUsageMask())).getDescription());
+            }
+        }
         return PageUtil.toPage(page.map(bsTemplateMapper::toDto));
     }
 

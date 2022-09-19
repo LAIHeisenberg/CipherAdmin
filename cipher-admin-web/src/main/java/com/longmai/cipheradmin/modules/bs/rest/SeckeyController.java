@@ -1,10 +1,8 @@
 package com.longmai.cipheradmin.modules.bs.rest;
 
-import com.longmai.cipheradmin.modules.bs.param.SecKeyQueryParam;
+import com.longmai.cipheradmin.modules.bs.param.*;
 import com.longmai.cipheradmin.modules.bs.service.SeckeyService;
 import com.longmai.cipheradmin.modules.bs.service.dto.KmsCryptographicObjectQueryCriteria;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyCreateParam;
-import com.longmai.cipheradmin.modules.bs.param.SecKeyDestroyParam;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +61,55 @@ public class SeckeyController {
         secKeyDestroyParam.setUuidKeys(uuidKeys);
         return new ResponseEntity<>(seckeyService.destroySecKeys(secKeyDestroyParam),HttpStatus.OK);
     }
+
+    /**
+     * 归档请求
+     * @param uuidKeys
+     * @return
+     */
+    @GetMapping("/archive")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> archiveSeckey(List<String> uuidKeys){
+        SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
+        archiveParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.archiveSecKeys(archiveParam),HttpStatus.OK);
+    }
+
+    /**
+     * 激活请求
+     */
+    @GetMapping("/activate")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> activateSeckey(List<String> uuidKeys){
+        SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
+        archiveParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.archiveSecKeys(archiveParam),HttpStatus.OK);
+    }
+
+    /**
+     * Revoke
+     */
+    @GetMapping("/revoke")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> revokeSeckey(SecKeyRevokeParam revokeParam){
+        return new ResponseEntity<>(seckeyService.revokeSecKeys(revokeParam),HttpStatus.OK);
+    }
+
+    /**
+     * 恢复
+     * @param revokeParam
+     * @return
+     */
+    @GetMapping("/recover")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> recoverSeckey(SecKeyDestroyParam revokeParam){
+        return new ResponseEntity<>(seckeyService.recoverSecKeys(revokeParam),HttpStatus.OK);
+    }
+
+    /**
+     * 删除
+     */
+
 
 
 }
