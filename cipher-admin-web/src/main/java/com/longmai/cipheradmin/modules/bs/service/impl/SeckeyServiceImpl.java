@@ -58,6 +58,11 @@ public class SeckeyServiceImpl implements SeckeyService {
     }
 
     @Override
+    public List<String> importSecKeys(SecKeyImportParam secKeyImportParam) {
+        return null;
+    }
+
+    @Override
     public List<String> destroySecKeys(SecKeyDestroyParam secKeyDestroyParam) {
         if(Objects.isNull(secKeyDestroyParam)){
             return null;
@@ -102,6 +107,16 @@ public class SeckeyServiceImpl implements SeckeyService {
 //        Page<SecKeyParam> page = kmsCryptographicObjectRepository.findAllPage((root, criteriaQuery, criteriaBuilder) -> QueryHelp.getPredicate(root,queryParam,criteriaBuilder),pageable);
 //        return PageUtil.toPage(page);
         return PageUtil.toPage(null);
+    }
+
+    @Override
+    public Object linkSecKeys(SecKeyArchiveParam archiveParam) {
+        return null;
+    }
+
+    @Override
+    public Object updateSecKeys(SecKeyArchiveParam archiveParam) {
+        return null;
     }
 
 }

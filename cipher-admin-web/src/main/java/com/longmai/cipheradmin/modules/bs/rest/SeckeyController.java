@@ -39,15 +39,55 @@ public class SeckeyController {
     }
 
     /**
-     * 密钥列表
-     * @param queryParam
-     * @param pageable
-     * @return
+     * 导入密钥
      */
-    @GetMapping("/list")
+    @PostMapping("/import")
     @PreAuthorize("@el.check('seckey:manage')")
-    public ResponseEntity<Object> listSeckey(SecKeyQueryParam queryParam, Pageable pageable){
-        return new ResponseEntity<>(seckeyService.queryAll(queryParam,pageable),HttpStatus.OK);
+    public ResponseEntity<Object> importSecKey(@RequestBody SecKeyImportParam secKeyImportParam){
+        List<String> uuidKeys = seckeyService.importSecKeys(secKeyImportParam);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    /**
+     * 激活请求
+     */
+    @GetMapping("/activate")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> activateSeckey(List<String> uuidKeys){
+        SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
+        archiveParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.archiveSecKeys(archiveParam),HttpStatus.OK);
+    }
+
+    /**
+     * 链接请求
+     */
+    @GetMapping("/link")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> linkSeckey(List<String> uuidKeys){
+        SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
+        archiveParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.linkSecKeys(archiveParam),HttpStatus.OK);
+    }
+
+    /**
+     * 更新请求
+     */
+    @GetMapping("/update")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> updateSeckey(List<String> uuidKeys){
+        SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
+        archiveParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.updateSecKeys(archiveParam),HttpStatus.OK);
+    }
+
+    /**
+     * 注销
+     */
+    @GetMapping("/revoke")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> revokeSeckey(SecKeyRevokeParam revokeParam){
+        return new ResponseEntity<>(seckeyService.revokeSecKeys(revokeParam),HttpStatus.OK);
     }
 
     /**
@@ -57,6 +97,18 @@ public class SeckeyController {
     @GetMapping("/destroy")
     @PreAuthorize("@el.check('seckey:manage')")
     public ResponseEntity<Object> destroySeckey(List<String> uuidKeys){
+        SecKeyDestroyParam secKeyDestroyParam = new SecKeyDestroyParam();
+        secKeyDestroyParam.setUuidKeys(uuidKeys);
+        return new ResponseEntity<>(seckeyService.destroySecKeys(secKeyDestroyParam),HttpStatus.OK);
+    }
+
+
+    /**
+     * 删除密钥
+     */
+    @GetMapping("/delete")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> deleteSeckey(List<String> uuidKeys){
         SecKeyDestroyParam secKeyDestroyParam = new SecKeyDestroyParam();
         secKeyDestroyParam.setUuidKeys(uuidKeys);
         return new ResponseEntity<>(seckeyService.destroySecKeys(secKeyDestroyParam),HttpStatus.OK);
@@ -75,25 +127,20 @@ public class SeckeyController {
         return new ResponseEntity<>(seckeyService.archiveSecKeys(archiveParam),HttpStatus.OK);
     }
 
+
     /**
-     * 激活请求
+     * 备份请求
+     * @param uuidKeys
+     * @return
      */
-    @GetMapping("/activate")
+    @GetMapping("/backups")
     @PreAuthorize("@el.check('seckey:manage')")
-    public ResponseEntity<Object> activateSeckey(List<String> uuidKeys){
+    public ResponseEntity<Object> backupsSeckey(List<String> uuidKeys){
         SecKeyArchiveParam archiveParam = new SecKeyArchiveParam();
         archiveParam.setUuidKeys(uuidKeys);
         return new ResponseEntity<>(seckeyService.archiveSecKeys(archiveParam),HttpStatus.OK);
     }
 
-    /**
-     * Revoke
-     */
-    @GetMapping("/revoke")
-    @PreAuthorize("@el.check('seckey:manage')")
-    public ResponseEntity<Object> revokeSeckey(SecKeyRevokeParam revokeParam){
-        return new ResponseEntity<>(seckeyService.revokeSecKeys(revokeParam),HttpStatus.OK);
-    }
 
     /**
      * 恢复
@@ -106,9 +153,19 @@ public class SeckeyController {
         return new ResponseEntity<>(seckeyService.recoverSecKeys(revokeParam),HttpStatus.OK);
     }
 
+
+
     /**
-     * 删除
+     * 密钥列表
+     * @param queryParam
+     * @param pageable
+     * @return
      */
+    @GetMapping("/list")
+    @PreAuthorize("@el.check('seckey:manage')")
+    public ResponseEntity<Object> listSeckey(SecKeyQueryParam queryParam, Pageable pageable){
+        return new ResponseEntity<>(seckeyService.queryAll(queryParam,pageable),HttpStatus.OK);
+    }
 
 
 

@@ -13,6 +13,8 @@ public interface SeckeyService {
      */
     List<String> createSecKeys(SecKeyCreateParam secKeyCreateParam);
 
+    List<String> importSecKeys(SecKeyImportParam secKeyImportParam);
+
     /**
      * 销毁
      * @param secKeyDestroyParam
@@ -48,4 +50,8 @@ public interface SeckeyService {
 
 
     Object queryAll(SecKeyQueryParam queryParam, Pageable pageable);
+
+    Object linkSecKeys(SecKeyArchiveParam archiveParam);
+
+    Object updateSecKeys(SecKeyArchiveParam archiveParam);
 }
