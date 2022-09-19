@@ -16,7 +16,7 @@ import java.io.Serializable;
 **/
 @Entity
 @Data
-@Table(name="bs_known_certificate")
+@Table(name="bs_local_ca")
 public class BsLocalCa implements Serializable {
 
     @Id

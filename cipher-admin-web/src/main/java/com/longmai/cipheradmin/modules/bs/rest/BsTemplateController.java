@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "/template管理")
-@RequestMapping("/api/bsTemplate")
+@RequestMapping("/api/template")
 public class BsTemplateController {
 
     private final BsTemplateService bsTemplateService;
@@ -31,7 +31,7 @@ public class BsTemplateController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsTemplate:list')")
+    @PreAuthorize("@el.check('templates:manage')")
     public void exportBsTemplate(HttpServletResponse response, BsTemplateQueryCriteria criteria) throws IOException {
         bsTemplateService.download(bsTemplateService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsTemplateController {
     @GetMapping
     @Log("查询/template")
     @ApiOperation("查询/template")
-    @PreAuthorize("@el.check('bsTemplate:list')")
+    @PreAuthorize("@el.check('templates:manage')")
     public ResponseEntity<Object> queryBsTemplate(BsTemplateQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsTemplateService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsTemplateController {
     @PostMapping
     @Log("新增/template")
     @ApiOperation("新增/template")
-    @PreAuthorize("@el.check('bsTemplate:add')")
+    @PreAuthorize("@el.check('templates:manage')")
     public ResponseEntity<Object> createBsTemplate(@Validated @RequestBody BsTemplate resources){
         return new ResponseEntity<>(bsTemplateService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsTemplateController {
     @PutMapping
     @Log("修改/template")
     @ApiOperation("修改/template")
-    @PreAuthorize("@el.check('bsTemplate:edit')")
+    @PreAuthorize("@el.check('templates:manage')")
     public ResponseEntity<Object> updateBsTemplate(@Validated @RequestBody BsTemplate resources){
         bsTemplateService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsTemplateController {
     @DeleteMapping
     @Log("删除/template")
     @ApiOperation("删除/template")
-    @PreAuthorize("@el.check('bsTemplate:del')")
+    @PreAuthorize("@el.check('templates:manage')")
     public ResponseEntity<Object> deleteBsTemplate(@RequestBody Long[] ids) {
         bsTemplateService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);

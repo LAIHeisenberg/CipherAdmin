@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "/strategy管理")
-@RequestMapping("/api/bsStrategy")
+@RequestMapping("/api/strategy")
 public class BsStrategyController {
 
     private final BsStrategyService bsStrategyService;
@@ -31,7 +31,7 @@ public class BsStrategyController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('bsStrategy:list')")
+    @PreAuthorize("@el.check('strategy:manage')")
     public void exportBsStrategy(HttpServletResponse response, BsStrategyQueryCriteria criteria) throws IOException {
         bsStrategyService.download(bsStrategyService.queryAll(criteria), response);
     }
@@ -39,7 +39,7 @@ public class BsStrategyController {
     @GetMapping
     @Log("查询/strategy")
     @ApiOperation("查询/strategy")
-    @PreAuthorize("@el.check('bsStrategy:list')")
+    @PreAuthorize("@el.check('strategy:manage')")
     public ResponseEntity<Object> queryBsStrategy(BsStrategyQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(bsStrategyService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class BsStrategyController {
     @PostMapping
     @Log("新增/strategy")
     @ApiOperation("新增/strategy")
-    @PreAuthorize("@el.check('bsStrategy:add')")
+    @PreAuthorize("@el.check('strategy:manage')")
     public ResponseEntity<Object> createBsStrategy(@Validated @RequestBody BsStrategy resources){
         return new ResponseEntity<>(bsStrategyService.create(resources),HttpStatus.CREATED);
     }
@@ -55,7 +55,7 @@ public class BsStrategyController {
     @PutMapping
     @Log("修改/strategy")
     @ApiOperation("修改/strategy")
-    @PreAuthorize("@el.check('bsStrategy:edit')")
+    @PreAuthorize("@el.check('strategy:manage')")
     public ResponseEntity<Object> updateBsStrategy(@Validated @RequestBody BsStrategy resources){
         bsStrategyService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -64,7 +64,7 @@ public class BsStrategyController {
     @DeleteMapping
     @Log("删除/strategy")
     @ApiOperation("删除/strategy")
-    @PreAuthorize("@el.check('bsStrategy:del')")
+    @PreAuthorize("@el.check('strategy:manage')")
     public ResponseEntity<Object> deleteBsStrategy(@RequestBody Long[] ids) {
         bsStrategyService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
