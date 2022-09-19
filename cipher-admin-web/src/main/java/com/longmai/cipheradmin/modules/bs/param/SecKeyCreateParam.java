@@ -43,4 +43,8 @@ public class SecKeyCreateParam {
      * 用户密码
      */
     private String password;
+
+    private Long templateId;
+
+    private Long strategyId;
 }

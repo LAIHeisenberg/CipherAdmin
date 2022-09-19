@@ -8,5 +8,5 @@ import lombok.Data;
 * @date 2022-09-08
 **/
 @Data
-public class BsLocalCertificateQueryCriteria{
+public class BsLocalCaQueryCriteria {
 }

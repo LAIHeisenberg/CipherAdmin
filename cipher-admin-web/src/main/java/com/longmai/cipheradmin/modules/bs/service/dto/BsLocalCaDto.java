@@ -11,7 +11,7 @@ import java.io.Serializable;
 * @date 2022-09-08
 **/
 @Data
-public class BsKnownCertificateDto implements Serializable {
+public class BsLocalCaDto implements Serializable {
 
     private Long id;
 

@@ -1,8 +1,9 @@
 package com.longmai.cipheradmin.modules.bs.service.mapstruct;
 
 import com.longmai.cipheradmin.base.BaseMapper;
-import com.longmai.cipheradmin.modules.bs.domain.BsKnownCertificate;
-import com.longmai.cipheradmin.modules.bs.service.dto.BsKnownCertificateDto;
+import com.longmai.cipheradmin.modules.bs.domain.BsLocalCa;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsKnownCaDto;
+import com.longmai.cipheradmin.modules.bs.service.dto.BsLocalCaDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -12,6 +13,6 @@ import org.mapstruct.ReportingPolicy;
 * @date 2022-09-08
 **/
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface BsKnownCertificateMapper extends BaseMapper<BsKnownCertificateDto, BsKnownCertificate> {
+public interface BsLocalCaMapper extends BaseMapper<BsLocalCaDto, BsLocalCa> {
 
 }

@@ -5,7 +5,6 @@ import cn.hutool.core.bean.BeanUtil;
 import io.swagger.annotations.ApiModelProperty;
 import cn.hutool.core.bean.copier.CopyOptions;
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.sql.Timestamp;
 import java.io.Serializable;
 
@@ -18,7 +17,7 @@ import java.io.Serializable;
 @Entity
 @Data
 @Table(name="bs_local_certificate")
-public class BsLocalCertificate implements Serializable {
+public class BsKnownCa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +57,7 @@ public class BsLocalCertificate implements Serializable {
     @ApiModelProperty(value = "ca 证书内容")
     private String certificateContent;
 
-    public void copy(BsLocalCertificate source){
+    public void copy(BsKnownCa source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }

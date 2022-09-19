@@ -1,6 +1,6 @@
 package com.longmai.cipheradmin.modules.bs.repository;
 
-import com.longmai.cipheradmin.modules.bs.domain.BsLocalCertificate;
+import com.longmai.cipheradmin.modules.bs.domain.BsKnownCa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 * @author huangsi
 * @date 2022-09-08
 **/
-public interface BsLocalCertificateRepository extends JpaRepository<BsLocalCertificate, Long>, JpaSpecificationExecutor<BsLocalCertificate> {
+public interface BsKnownCaRepository extends JpaRepository<BsKnownCa, Long>, JpaSpecificationExecutor<BsKnownCa> {
 }

@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.*;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -41,7 +42,8 @@ public class BsGroupController {
     @ApiOperation("查询bsuserGroup")
     @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> queryBsGroup(BsGroupQueryCriteria criteria, Pageable pageable){
-        return new ResponseEntity<>(bsGroupService.queryAll(criteria,pageable),HttpStatus.OK);
+        Map<String,Object> map = bsGroupService.queryAll(criteria,pageable);
+        return new ResponseEntity<>(map,HttpStatus.OK);
     }
 
     @PostMapping
@@ -66,6 +68,8 @@ public class BsGroupController {
     @ApiOperation("删除bsuserGroup")
     @PreAuthorize("@el.check('bsGroup:manage')")
     public ResponseEntity<Object> deleteBsGroup(@RequestBody Long[] ids) {
+        // 验证是否被用户关联
+        bsGroupService.verification(ids);
         bsGroupService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }

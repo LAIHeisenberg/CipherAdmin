@@ -1,26 +1,29 @@
 package com.longmai.cipheradmin.modules.bs.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.hash.Hash;
+import com.longmai.cipheradmin.exception.BadRequestException;
+import com.longmai.cipheradmin.exception.EntityExistException;
+import com.longmai.cipheradmin.exception.EntityNotFoundException;
 import com.longmai.cipheradmin.modules.bs.domain.BsGroup;
 import com.longmai.cipheradmin.modules.bs.repository.BsGroupRepository;
 import com.longmai.cipheradmin.modules.bs.service.BsGroupService;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsGroupDto;
 import com.longmai.cipheradmin.modules.bs.service.dto.BsGroupQueryCriteria;
 import com.longmai.cipheradmin.modules.bs.service.mapstruct.BsGroupMapper;
-import com.longmai.cipheradmin.utils.FileUtil;
-import com.longmai.cipheradmin.utils.PageUtil;
-import com.longmai.cipheradmin.utils.QueryHelp;
-import com.longmai.cipheradmin.utils.ValidationUtil;
+import com.longmai.cipheradmin.modules.system.domain.Menu;
+import com.longmai.cipheradmin.modules.system.domain.Role;
+import com.longmai.cipheradmin.utils.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.SetUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
 * @website https://eladmin.vip
@@ -57,6 +60,14 @@ public class BsGroupServiceImpl implements BsGroupService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BsGroupDto create(BsGroup resources) {
+        String name = resources.getName();
+        if(StringUtils.isBlank(name)){
+            throw new BadRequestException("用户组不能为空");
+        }
+        BsGroup group = bsGroupRepository.findByName(name);
+        if(Objects.nonNull(group)){
+            throw new EntityExistException(BsGroup.class,"name",resources.getName());
+        }
         return bsGroupMapper.toDto(bsGroupRepository.save(resources));
     }
 
@@ -65,6 +76,12 @@ public class BsGroupServiceImpl implements BsGroupService {
     public void update(BsGroup resources) {
         BsGroup bsGroup = bsGroupRepository.findById(resources.getId()).orElseGet(BsGroup::new);
         ValidationUtil.isNull( bsGroup.getId(),"BsGroup","id",resources.getId());
+
+        BsGroup group1 = bsGroupRepository.findByName(bsGroup.getName());
+
+        if (group1 != null && !group1.getId().equals(resources.getId())) {
+            throw new EntityExistException(Role.class, "username", resources.getName());
+        }
         bsGroup.copy(resources);
         bsGroupRepository.save(bsGroup);
     }
@@ -73,6 +90,14 @@ public class BsGroupServiceImpl implements BsGroupService {
     public void deleteAll(Long[] ids) {
         for (Long id : ids) {
             bsGroupRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public void verification(Long[] ids) {
+        Set<Long> idSet = new HashSet<>(Arrays.asList(ids));
+        if (bsGroupRepository.countByGroupIds(idSet) > 0) {
+            throw new BadRequestException("所选组存在用户关联，请解除关联再试！");
         }
     }
 
